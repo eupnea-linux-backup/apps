@@ -187,9 +187,9 @@ class SetupScreen5(Screen):
             return
 
         # Add basic layouts labels to the scrollview
-        for layout in wifi_list:
+        for wifi in wifi_list:
             self.new_label = Factory.CustomLabel()
-            self.new_label.text = layout
+            self.new_label.text = wifi[0]
             self.new_label.bind(on_touch_down=self.manager.get_screen("setup_screen_5").wifi_selected)
             self.manager.get_screen("setup_screen_5").ids.wifi_list_layout.add_widget(self.new_label)
 

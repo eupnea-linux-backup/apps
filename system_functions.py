@@ -50,10 +50,18 @@ def get_wifi_list() -> list:
     print("Checking if already connected to the internet")
     if not bash("nmcli con show") == "":
         return ["Already connected to the internet"]
+
     # turn on Wi-Fi
     bash("nmcli radio wifi on")
-    # parse nmcli output into a list
-    raw_wifi = bash("nmcli --terse --fields SSID,BARS,SECURITY dev wifi list").strip().split("\n")
+
+    # try to scan for networks multiple times
+    for i in range(5):
+        print("Scanning for Wi-Fi networks")
+        raw_wifi = bash("nmcli --terse --fields SSID,BARS,SECURITY dev wifi list").strip().split("\n")
+        if len(raw_wifi) > 1:
+            break
+        sleep(1)
+
     # Parse list into a list of lists
     wifi_list = []
     for network in raw_wifi:
