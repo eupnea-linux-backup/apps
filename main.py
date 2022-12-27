@@ -75,6 +75,7 @@ class SetupScreen3(Screen):
                     advanced_list.sort()
             except KeyError:
                 # Layout doesn't have advanced layouts
+                self.selected_layout = self.short_name
                 # activate next button
                 self.manager.get_screen("setup_screen_3").ids.next_button_3.disabled = False
                 self.manager.get_screen("setup_screen_3").ids.next_button_3.state = "normal"
