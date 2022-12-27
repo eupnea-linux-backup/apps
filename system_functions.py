@@ -83,4 +83,8 @@ def get_wifi_list() -> list:
             network[2] = False
         wifi_list.append(network)
 
+    # Remove duplicates
+    wifi_list = list(set(tuple(i) for i in wifi_list))  # # Convert list into a set of tuples
+    wifi_list = [list(i) for i in wifi_list]  # Convert set of tuples back into a list of lists
+
     return wifi_list
