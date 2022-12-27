@@ -174,25 +174,6 @@ class SetupScreen4(Screen):
         self.manager.get_screen("setup_screen_4").ids.username_input.background_normal = "assets/textfield/normal.png"
         self.manager.get_screen("setup_screen_4").ids.username_error.text = ""
 
-    def check_input(self) -> None:
-        # Strip whitespaces from username textinput
-        self.manager.get_screen("setup_screen_4").ids.username_input.text = self.manager.get_screen(
-            "setup_screen_4").ids.username_input.text.strip()
-        username_error = self.check_username(self.manager.get_screen("setup_screen_4").ids.username_input.text)
-
-        # Check hostname
-        hostname_error = ""  # for testing
-
-        if username_error is not "":
-            self.manager.get_screen("setup_screen_4").ids.username_error.text = username_error
-            self.manager.get_screen(
-                "setup_screen_4").ids.username_input.background_normal = "assets/textfield/error.png"
-
-        if hostname_error is not "":
-            self.manager.get_screen("setup_screen_4").ids.hostname_error.text = hostname_error
-            self.manager.get_screen(
-                "setup_screen_4").ids.hostname_input.background_normal = "assets/textfield/error.png"
-
 
 class SetupScreen5(Screen):
     pass
