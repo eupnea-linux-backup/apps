@@ -38,6 +38,7 @@
     SetupScreen2:
     SetupScreen3:
     SetupScreen4:
+    SetupScreen5:
 
 <BlankScreen>:
     name: "blank"
@@ -312,16 +313,25 @@
             TextInput:
                 id: username_input
                 multiline: False
-                text: "localuser"
+                write_tab: False
+                on_text: root.check_username()
                 foreground_color: (1, 1, 1, 1)
-                font_size: self.width/20
+                font_size: self.height/2
                 size_hint: 0.2, None
                 height: 40
-                background_color: hex('#8a8a8a')
-                background_normal: ""
-                background_active: ""
-            Image:
-                source: "assets/blank_icons/blank_1_pixel.png"
+                background_color: (1, 1, 1, 1)
+                background_normal: "assets/textfield/normal.png"
+                background_active: "assets/textfield/active.png"
+            Label:
+                text_size: self.size
+                id: username_error
+                text: ""
+                color: (1, 0, 0, 1)
+                font_size: self.width/20
+                halign: "left"
+                valign: "center"
+                height: 40
+                pos_hint: {"center_y": 0.9}
 
             Label:
                 text_size: self.size
@@ -332,18 +342,28 @@
                 size_hint: 1, 0.2
                 pos_hint: {"center_y": 0.9}
             TextInput:
-                id: username_input
+                id: password_input_1
                 multiline: False
+                write_tab: False
                 password: True
+                on_text: root.compare_passwords()
                 foreground_color: (1, 1, 1, 1)
-                font_size: self.width/20
+                font_size: self.height/2
                 size_hint: 0.2, None
                 height: 40
-                background_color: hex('#8a8a8a')
-                background_normal: ""
-                background_active: ""
-            Image:
-                source: "assets/blank_icons/blank_1_pixel.png"
+                background_color: (1, 1, 1, 1)
+                background_normal: "assets/textfield/normal.png"
+                background_active: "assets/textfield/active.png"
+            Label:
+                text_size: self.size
+                id: password_error_1
+                text: ""
+                color: (1, 0, 0, 1)
+                font_size: self.width/20
+                halign: "left"
+                valign: "center"
+                height: 40
+                pos_hint: {"center_y": 0.9}
 
             Label:
                 text_size: self.size
@@ -354,18 +374,36 @@
                 size_hint: 1, 0.2
                 pos_hint: {"center_y": 0.9}
             TextInput:
-                id: username_input
+                id: password_input_2
                 multiline: False
+                write_tab: False
                 password: True
+                on_text: root.compare_passwords()
                 foreground_color: (1, 1, 1, 1)
-                font_size: self.width/20
+                font_size: self.height/2
                 size_hint: 0.2, None
                 height: 40
                 background_color: (1, 1, 1, 1)
-                background_normal: "assets/blank_icons/test.png"
-                background_active: ""
+                background_normal: "assets/textfield/normal.png"
+                background_active: "assets/textfield/active.png"
+            Label:
+                text_size: self.size
+                id: password_error_2
+                text: ""
+                color: (1, 0, 0, 1)
+                font_size: self.width/20
+                halign: "left"
+                valign: "center"
+                height: 40
+                pos_hint: {"center_y": 0.9}
+
             Image:
-                source: "assets/blank_icons/blank_1_pixel.png"
+                source: "assets/blank_icons/blank.png"
+            Image:
+                source: "assets/blank_icons/blank.png"
+            Image:
+                id: reference_image
+                source: "assets/blank_icons/blank.png"
 
             Label:
                 text_size: self.size
@@ -373,21 +411,29 @@
                 font_size: self.width/20
                 halign: "right"
                 valign: "center"
-                size_hint: 1, 0.2
+                height: 40
                 pos_hint: {"center_y": 0.9}
             TextInput:
-                id: username_input
+                id: hostname_input
                 multiline: False
+                write_tab: False
                 text: "delbin"
-                font_size: self.width/20
+                font_size: self.height/2
                 foreground_color: (1, 1, 1, 1)
-                size_hint: 0.1, None
+                size_hint: 0.2, None
                 height: 40
-                background_color: hex('#8a8a8a')
-                background_normal: ""
-                background_active: ""
-            Image:
-                source: "assets/blank_icons/blank_1_pixel.png"
+                background_normal: "assets/textfield/normal.png"
+                background_active: "assets/textfield/active.png"
+            Label:
+                text_size: self.size
+                id: hostname_error
+                text: ""
+                color: (1, 0, 0, 1)
+                font_size: self.width/20
+                halign: "left"
+                valign: "center"
+                height: 40
+                pos_hint: {"center_y": 0.9}
 
         BoxLayout:
             orientation: "horizontal"
@@ -407,9 +453,19 @@
                 text: "Next"
                 size_hint: 0.3, 0.3
                 pos_hint: {"center_x": 0}
-                disabled: True
-                state: "down"
+                # Only allow pressing the button if all fields are filled in and all error messages are empty
+                disabled: not (username_input.text and password_input_1.text and password_input_2.text and hostname_input.text) or (username_error.text or password_error_1.text or password_error_2.text or hostname_error.text)
+                state: "down" if not (username_input.text and password_input_1.text and password_input_2.text and hostname_input.text) or (username_error.text or password_error_1.text or password_error_2.text or hostname_error.text) else "normal"
                 on_release:
-                    root.button_clicked(self)
-                    app.root.current = "setup_screen_4"
+                    app.root.current = "setup_screen_5"
                     root.manager.transition.direction = "left"
+
+# Wifi setup screen
+<SetupScreen5>:
+    name: "setup_screen_5"
+    canvas.before:
+        Color:
+            rgba: hex('#1e2024')
+        Rectangle:
+            pos: self.pos
+            size: self.size

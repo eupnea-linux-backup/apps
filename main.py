@@ -106,11 +106,95 @@ class SetupScreen3(Screen):
             self.manager.get_screen("setup_screen_3").ids.next_button_3.disabled = False
             self.manager.get_screen("setup_screen_3").ids.next_button_3.state = "normal"
 
-    def button_clicked(self, instance):
+    def button_clicked(self, instance) -> None:
         system_functions.set_keyboard_layout(self.selected_layout)
 
 
 class SetupScreen4(Screen):
+
+    def clear_username_error(self):
+        self.manager.get_screen("setup_screen_4").ids.username_error.text = ""
+        self.manager.get_screen("setup_screen_4").ids.username_input.background_normal = "assets/textfield/normal.png"
+
+    def compare_passwords(self) -> None:
+        if not self.manager.get_screen("setup_screen_4").ids.password_input_1.text == self.manager.get_screen(
+                "setup_screen_4").ids.password_input_2.text:
+            self.manager.get_screen("setup_screen_4").ids.password_error_1.text = "Passwords don't match"
+            self.manager.get_screen(
+                "setup_screen_4").ids.password_input_1.background_normal = "assets/textfield/error.png"
+            self.manager.get_screen("setup_screen_4").ids.password_error_2.text = "Passwords don't match"
+            self.manager.get_screen(
+                "setup_screen_4").ids.password_input_2.background_normal = "assets/textfield/error.png"
+        else:
+            self.manager.get_screen("setup_screen_4").ids.password_error_1.text = ""
+            self.manager.get_screen(
+                "setup_screen_4").ids.password_input_1.background_normal = "assets/textfield/normal.png"
+            self.manager.get_screen("setup_screen_4").ids.password_error_2.text = ""
+            self.manager.get_screen(
+                "setup_screen_4").ids.password_input_2.background_normal = "assets/textfield/normal.png"
+
+    def check_username(self) -> None:
+        # Don't check if username is empty and revert to normal
+        if self.manager.get_screen("setup_screen_4").ids.username_input.text == "":
+            self.manager.get_screen(
+                "setup_screen_4").ids.username_input.background_normal = "assets/textfield/normal.png"
+            self.manager.get_screen("setup_screen_4").ids.username_error.text = ""
+            return
+
+        # Check for spaces inside username
+        if " " in self.manager.get_screen("setup_screen_4").ids.username_input.text:
+            self.manager.get_screen("setup_screen_4").ids.username_error.text = "Username cannot contain spaces"
+            self.manager.get_screen(
+                "setup_screen_4").ids.username_input.background_normal = "assets/textfield/error.png"
+            return
+
+        # Don't allow dash at the beginning
+        if self.manager.get_screen("setup_screen_4").ids.username_input.text[0] == "-":
+            self.manager.get_screen("setup_screen_4").ids.username_error.text = "Username can't start with a dash"
+            self.manager.get_screen(
+                "setup_screen_4").ids.username_input.background_normal = "assets/textfield/error.png"
+            return
+
+        # Don't allow numbers at the beginning
+        if self.manager.get_screen("setup_screen_4").ids.username_input.text[0].isdigit():
+            self.manager.get_screen("setup_screen_4").ids.username_error.text = "Username can't start with a number"
+            self.manager.get_screen(
+                "setup_screen_4").ids.username_input.background_normal = "assets/textfield/error.png"
+            return
+
+        # Only allow chars from dictionary below
+        for char in self.manager.get_screen("setup_screen_4").ids.username_input.text:
+            if char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-":
+                self.manager.get_screen(
+                    "setup_screen_4").ids.username_error.text = f"Username contains invalid character: {char}"
+                self.manager.get_screen(
+                    "setup_screen_4").ids.username_input.background_normal = "assets/textfield/error.png"
+                return
+        # if no invalid chars are found revert to normal
+        self.manager.get_screen("setup_screen_4").ids.username_input.background_normal = "assets/textfield/normal.png"
+        self.manager.get_screen("setup_screen_4").ids.username_error.text = ""
+
+    def check_input(self) -> None:
+        # Strip whitespaces from username textinput
+        self.manager.get_screen("setup_screen_4").ids.username_input.text = self.manager.get_screen(
+            "setup_screen_4").ids.username_input.text.strip()
+        username_error = self.check_username(self.manager.get_screen("setup_screen_4").ids.username_input.text)
+
+        # Check hostname
+        hostname_error = ""  # for testing
+
+        if username_error is not "":
+            self.manager.get_screen("setup_screen_4").ids.username_error.text = username_error
+            self.manager.get_screen(
+                "setup_screen_4").ids.username_input.background_normal = "assets/textfield/error.png"
+
+        if hostname_error is not "":
+            self.manager.get_screen("setup_screen_4").ids.hostname_error.text = hostname_error
+            self.manager.get_screen(
+                "setup_screen_4").ids.hostname_input.background_normal = "assets/textfield/error.png"
+
+
+class SetupScreen5(Screen):
     pass
 
 
@@ -125,7 +209,7 @@ class MainApp(App):
         Window.size = (1280, 720)
         Window.borderless = True
         window_manager = WindowManager()
-        # Window.fullscreen = True
+        Window.fullscreen = True
         window_manager.current = 'setup_screen_1'
         return window_manager
 
