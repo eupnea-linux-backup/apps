@@ -213,9 +213,12 @@ class WindowManager(ScreenManager):
         return True
 
     def on_touch_down(self, touch):
-        if touch.button == 'right':
-            print("Refusing to allow right click")
-            return True
+        try:
+            if touch.button == 'right':
+                print("Refusing to allow right click")
+                return True
+        except AttributeError:
+            pass
         return super().on_touch_down(touch)
 
     def keyboard(self, window, key, *args):
