@@ -181,17 +181,35 @@ class SetupScreen5(Screen):
 
 
 class WindowManager(ScreenManager):
-    pass
+    def __init__(self, **kwargs):
+        super(WindowManager, self).__init__(**kwargs)
+        # Override keyboard controls
+        Window.bind(on_keyboard=self.keyboard, on_request_close=self.inhibit_close)
+
+    def inhibit_close(self, *args):
+        print("Refusing to close")
+        return True
+
+    def on_touch_down(self, touch):
+        if touch.button == 'right':
+            print("Refusing to allow right click")
+            return True
+        return super().on_touch_down(touch)
+
+    def keyboard(self, window, key, *args):
+        print(key)
+        if key == 27:  # ESC
+            return True  # Do nothing
 
 
 class MainApp(App):
     def build(self):
         Window.clearcolor = (30 / 255, 32 / 255, 36 / 255, 1)  # color between transitions
-        # Window.size = (1920, 1080)
-        Window.size = (1280, 720)
+        Window.size = (1920, 1080)
+        # Window.size = (1280, 720)
         Window.borderless = True
+        # Window.fullscreen = True
         window_manager = WindowManager()
-        Window.fullscreen = True
         window_manager.current = 'setup_screen_1'
         return window_manager
 

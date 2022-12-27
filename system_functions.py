@@ -43,3 +43,34 @@ def parse_keyboard_layouts() -> Tuple[dict, dict]:
 
 def set_keyboard_layout(layout: str) -> None:
     print("Setting keyboard layout to: " + layout)
+
+
+def list_wifi_networks() -> None:
+    """List all Wi-Fi networks if not using ethernet"""
+    print("Checking if already connected to the internet")
+    if not bash("nmcli con show") == "":
+        return  # already connected to internet
+    # turn on Wi-Fi
+    bash("nmcli radio wifi on")
+    # parse nmcli output into a list
+    raw_wifi = bash("nmcli --terse --fields SSID,BARS,SECURITY dev wifi list").strip().split("\n")
+    # Parse list into a list of lists
+    wifi_list = []
+    for network in raw_wifi:
+        network = network.split(":")
+        # Transform bars into a number
+        match network[1]:
+            case "▂▄▆█":
+                network[1] = 4
+            case "▂▄▆_":
+                network[1] = 3
+            case "▂▄__":
+                network[1] = 2
+            case "▂___":
+                network[1] = 1
+        # Transform security into a boolean
+        if network[2].__contains__("WPA"):
+            network[2] = True
+        else:
+            network[2] = False
+        wifi_list.append(network)
