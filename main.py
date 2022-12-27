@@ -2,7 +2,7 @@ from kivy.app import App
 from kivy.config import Config
 from kivy.core.window import Window
 from kivy.factory import Factory
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 
 import system_functions
 
@@ -177,6 +177,28 @@ class SetupScreen4(Screen):
 
 
 class SetupScreen5(Screen):
+    # This function will be called every time the screen is displayed
+    def on_enter(self):
+        # Read Wi-Fi ssids
+        wifi_list = system_functions.get_wifi_list()
+        if wifi_list[0] == "Already connected to the internet":
+            print("Already connected to the internet")
+            self.manager.current = "setup_screen_6"  # skip to next screen
+            return
+
+        # Add basic layouts labels to the scrollview
+        for layout in wifi_list:
+            self.new_label = Factory.CustomLabel()
+            self.new_label.text = layout
+            self.new_label.bind(on_touch_down=self.manager.get_screen("setup_screen_5").wifi_selected)
+            self.manager.get_screen("setup_screen_5").ids.wifi_list_layout.add_widget(self.new_label)
+
+    def wifi_selected(self, instance, touch):
+        if instance.collide_point(*touch.pos):
+            pass
+
+
+class SetupScreen6(Screen):
     pass
 
 
@@ -210,7 +232,7 @@ class MainApp(App):
         Window.borderless = True
         # Window.fullscreen = True
         window_manager = WindowManager()
-        window_manager.current = 'setup_screen_1'
+        window_manager.current = 'setup_screen_4'
         return window_manager
 
 

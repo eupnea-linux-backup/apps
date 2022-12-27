@@ -45,11 +45,11 @@ def set_keyboard_layout(layout: str) -> None:
     print("Setting keyboard layout to: " + layout)
 
 
-def list_wifi_networks() -> None:
+def get_wifi_list() -> list:
     """List all Wi-Fi networks if not using ethernet"""
     print("Checking if already connected to the internet")
     if not bash("nmcli con show") == "":
-        return  # already connected to internet
+        return ["Already connected to the internet"]
     # turn on Wi-Fi
     bash("nmcli radio wifi on")
     # parse nmcli output into a list
@@ -74,3 +74,5 @@ def list_wifi_networks() -> None:
         else:
             network[2] = False
         wifi_list.append(network)
+
+    return wifi_list
