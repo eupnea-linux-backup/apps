@@ -184,7 +184,6 @@ class SetupScreen5(Screen):
         wifi_list = system_functions.get_wifi_list()
         if wifi_list[0] == "Already connected to the internet":
             print("Already connected to the internet")
-            # TODO: UNCOMMENT FOR RELEASE
             self.manager.current = "setup_screen_6"  # skip to next screen
             return
 
