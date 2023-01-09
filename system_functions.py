@@ -42,20 +42,20 @@ def parse_keyboard_layouts() -> Tuple[dict, dict]:
 
 
 def set_keyboard_layout(layout: str) -> None:
-    print("Setting keyboard layout to: " + layout)
+    print(f"Setting keyboard layout to: {layout}")
 
 
 def get_wifi_list() -> list:
     """List all Wi-Fi networks if not using ethernet"""
     print("Checking if already connected to the internet")
-    if not bash("nmcli con show") == "":
+    if bash("nmcli con show") != "":
         return ["Already connected to the internet"]
 
     # turn on Wi-Fi
     bash("nmcli radio wifi on")
 
     # try to scan for networks multiple times
-    for i in range(5):
+    for _ in range(5):
         print("Scanning for Wi-Fi networks")
         raw_wifi = bash("nmcli --terse --fields SSID,BARS,SECURITY dev wifi list").strip().split("\n")
         if len(raw_wifi) > 1:
@@ -77,14 +77,11 @@ def get_wifi_list() -> list:
             case "▂___":
                 network[1] = 1
         # Transform security into a boolean
-        if network[2].__contains__("WPA"):
-            network[2] = True
-        else:
-            network[2] = False
+        network[2] = bool(network[2].__contains__("WPA"))
         wifi_list.append(network)
 
     # Remove duplicates
-    wifi_list = list(set(tuple(i) for i in wifi_list))  # # Convert list into a set of tuples
-    wifi_list = [list(i) for i in wifi_list]  # Convert set of tuples back into a list of lists
+    wifi_list = list(set(tuple(_) for _ in wifi_list))  # # Convert list into a set of tuples
+    wifi_list = [list(_) for _ in wifi_list]  # Convert set of tuples back into a list of lists
 
     return wifi_list

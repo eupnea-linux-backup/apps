@@ -20,7 +20,7 @@ class SetupScreen1(Screen):
 class SetupScreen2(Screen):
     def button_clicked(self, instance):
         install_type = instance.install_type
-        print("Install type selected: " + instance.install_type)
+        print(f"Install type selected: {instance.install_type}")
 
 
 class SetupScreen3(Screen):
@@ -32,7 +32,6 @@ class SetupScreen3(Screen):
     def on_enter(self):
         # Generate layouts dictionaries
         # Parse into list
-
         basic_list = []
         for key, value in self.dictionaries[0].items():
             basic_list.append(key)
@@ -46,66 +45,68 @@ class SetupScreen3(Screen):
             self.manager.get_screen("setup_screen_3").ids.basic_layout_list.add_widget(self.new_label)
 
     def basic_layout_selected(self, instance, touch):
-        if instance.collide_point(*touch.pos):
-            # Disable button, no matter what
-            self.manager.get_screen("setup_screen_3").ids.next_button_3.disabled = True
-            self.manager.get_screen("setup_screen_3").ids.next_button_3.state = "down"
+        if not instance.collide_point(*touch.pos):
+            return
+        # Disable button, no matter what
+        self.manager.get_screen("setup_screen_3").ids.next_button_3.disabled = True
+        self.manager.get_screen("setup_screen_3").ids.next_button_3.state = "down"
 
-            # Reset background color of previous label
-            if self.prev_basic_label is not None:
-                self.prev_basic_label.background_color = (0, 0, 0, 0)
-            # Change background color of selected label
-            instance.background_color = (1, 1, 1, 0.3)
-            # Save selected label
-            self.prev_basic_label = instance
+        # Reset background color of previous label
+        if self.prev_basic_label is not None:
+            self.prev_basic_label.background_color = (0, 0, 0, 0)
+        # Change background color of selected label
+        instance.background_color = (1, 1, 1, 0.3)
+        # Save selected label
+        self.prev_basic_label = instance
 
-            print("basic layout selected: " + instance.text)
-            # Show advanced layouts in second scrollview
-            self.manager.get_screen("setup_screen_3").ids.advanced_layout_list.clear_widgets()
+        print(f"basic layout selected: {instance.text}")
+        # Show advanced layouts in second scrollview
+        self.manager.get_screen("setup_screen_3").ids.advanced_layout_list.clear_widgets()
 
-            # Get layout short name from dict
-            self.short_name = self.dictionaries[0][instance.text]
-            print("basic layout selected short name: " + self.short_name)
+        # Get layout short name from dict
+        self.short_name = self.dictionaries[0][instance.text]
+        print(f"basic layout selected short name: {self.short_name}")
 
-            # get advanced layouts for selected basic layout
-            advanced_list = []
-            try:
-                for key, value in self.dictionaries[1][self.short_name].items():
-                    advanced_list.append(key)
-                    advanced_list.sort()
-            except KeyError:
-                # Layout doesn't have advanced layouts
-                self.selected_layout = self.short_name
-                # activate next button
-                self.manager.get_screen("setup_screen_3").ids.next_button_3.disabled = False
-                self.manager.get_screen("setup_screen_3").ids.next_button_3.state = "normal"
-                return
-
-            for layout in advanced_list:
-                self.new_label = Factory.CustomLabel()
-                self.new_label.text = layout
-                self.new_label.bind(on_touch_down=self.manager.get_screen("setup_screen_3").advanced_layout_selected)
-                self.manager.get_screen("setup_screen_3").ids.advanced_layout_list.add_widget(self.new_label)
-
-    def advanced_layout_selected(self, instance, touch):
-        if instance.collide_point(*touch.pos):
-            # Disable button, no matter what
-            self.manager.get_screen("setup_screen_3").ids.next_button_3.disabled = True
-            self.manager.get_screen("setup_screen_3").ids.next_button_3.state = "down"
-
-            # Reset background color of previous label
-            if self.prev_advanced_label is not None:
-                self.prev_advanced_label.background_color = (0, 0, 0, 0)
-            # Change background color of selected label
-            instance.background_color = (1, 1, 1, 0.3)
-            # Save selected label
-            self.prev_advanced_label = instance
-
-            print("advanced layout selected: " + instance.text)
-            self.selected_layout = self.dictionaries[1][self.short_name][instance.text]
-            print("selected layout short name: " + self.selected_layout)
+        # get advanced layouts for selected basic layout
+        advanced_list = []
+        try:
+            for key, value in self.dictionaries[1][self.short_name].items():
+                advanced_list.append(key)
+                advanced_list.sort()
+        except KeyError:
+            # Layout doesn't have advanced layouts
+            self.selected_layout = self.short_name
+            # activate next button
             self.manager.get_screen("setup_screen_3").ids.next_button_3.disabled = False
             self.manager.get_screen("setup_screen_3").ids.next_button_3.state = "normal"
+            return
+
+        for layout in advanced_list:
+            self.new_label = Factory.CustomLabel()
+            self.new_label.text = layout
+            self.new_label.bind(on_touch_down=self.manager.get_screen("setup_screen_3").advanced_layout_selected)
+            self.manager.get_screen("setup_screen_3").ids.advanced_layout_list.add_widget(self.new_label)
+
+    def advanced_layout_selected(self, instance, touch):
+        if not instance.collide_point(*touch.pos):
+            return
+        # Disable button, no matter what
+        self.manager.get_screen("setup_screen_3").ids.next_button_3.disabled = True
+        self.manager.get_screen("setup_screen_3").ids.next_button_3.state = "down"
+
+        # Reset background color of previous label
+        if self.prev_advanced_label is not None:
+            self.prev_advanced_label.background_color = (0, 0, 0, 0)
+        # Change background color of selected label
+        instance.background_color = (1, 1, 1, 0.3)
+        # Save selected label
+        self.prev_advanced_label = instance
+
+        print(f"advanced layout selected: {instance.text}")
+        self.selected_layout = self.dictionaries[1][self.short_name][instance.text]
+        print(f"selected layout short name: {self.selected_layout}")
+        self.manager.get_screen("setup_screen_3").ids.next_button_3.disabled = False
+        self.manager.get_screen("setup_screen_3").ids.next_button_3.state = "normal"
 
     def button_clicked(self, instance) -> None:
         system_functions.set_keyboard_layout(self.selected_layout)
@@ -118,7 +119,7 @@ class SetupScreen4(Screen):
         self.manager.get_screen("setup_screen_4").ids.username_input.background_normal = "assets/textfield/normal.png"
 
     def compare_passwords(self) -> None:
-        if not self.manager.get_screen("setup_screen_4").ids.password_input_1.text == self.manager.get_screen(
+        if self.manager.get_screen("setup_screen_4").ids.password_input_1.text != self.manager.get_screen(
                 "setup_screen_4").ids.password_input_2.text:
             self.manager.get_screen("setup_screen_4").ids.password_error_1.text = "Passwords don't match"
             self.manager.get_screen(
@@ -183,6 +184,7 @@ class SetupScreen5(Screen):
         wifi_list = system_functions.get_wifi_list()
         if wifi_list[0] == "Already connected to the internet":
             print("Already connected to the internet")
+            # TODO: UNCOMMENT FOR RELEASE
             self.manager.current = "setup_screen_6"  # skip to next screen
             return
 
