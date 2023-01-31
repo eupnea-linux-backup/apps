@@ -2,7 +2,7 @@ from kivy.app import App
 from kivy.config import Config
 from kivy.core.window import Window
 from kivy.factory import Factory
-from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
+from kivy.uix.screenmanager import ScreenManager, Screen
 
 import system_functions
 
@@ -226,12 +226,15 @@ class WindowManager(ScreenManager):
         print(key)
         if key == 27:  # ESC
             return True  # Do nothing
+        if key == 287:  # F6
+            print("F6 pressed, exiting")
+            exit(0)
 
 
 class MainApp(App):
     def build(self):
         Window.clearcolor = (30 / 255, 32 / 255, 36 / 255, 1)  # color between transitions
-        Window.size = (1920, 1080)
+        # Window.size = (1920, 1080)
         # Window.size = (1280, 720)
         Window.borderless = True
         # Window.fullscreen = True
