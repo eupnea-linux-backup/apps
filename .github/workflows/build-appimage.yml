@@ -1,0 +1,69 @@
+name: build
+
+on:
+  schedule:
+    - cron: "10 0 * * *" # run at the start of every day after functions.py updates
+  workflow_dispatch:
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Installing dependencies
+        run: sudo apt-get install -y python3-pip python3-setuptools curl rsync fuse libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev
+
+      - name: Downloading misc dependencies
+        run: |
+          curl -L https://github.com/niess/python-appimage/releases/download/python3.10/python3.10.9-cp310-cp310-manylinux2014_x86_64.AppImage -o python.AppImage
+          curl -L https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -o appimagetool-x86_64.AppImage
+
+      - name: Create AppImage root and copy files into it
+        run: |
+          chmod +x ./python.AppImage
+          ./python.AppImage --appimage-extract
+          mv squashfs-root /tmp/kivy_appdir
+
+      - name: Compile kivy inside container
+        run: |
+          # Kivy refuses to build inside the appdir due to missing build deps -> build inside container first
+          python3 -m pip install "kivy[base] @ https://github.com/kivy/kivy/archive/stable.zip"
+          python3 -m pip show kivy
+          # If pip detects the dependencies in the container, it will refuse to install them into the AppImage dir
+          # -> uninstall them before installing them into the AppImage dir
+          python -m pip uninstall docutils Kivy-Garden pygments
+
+      - name: Install kivy deps into the appimage
+        run: /tmp/kivy_appdir/AppRun -m pip install docutils Kivy-Garden pygments
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: helloWorld-linux-x86_64
+          path: dist/
+
+      - name: Create dist tarball
+        run: 'tar -cjvf helloWorld-linux-x86_64.${{ github.run_id }}.tar.bz2 dist/*'
+        shell: bash
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_id }}_linux
+          release_name: 'Public Build Artifact: Linux ${{ github.run_id }}'
+          draft: false
+          prerelease: true
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: helloWorld-linux-x86_64.${{ github.run_id }}.tar.bz2
+          asset_name: helloWorld-linux-x86_64.${{ github.run_id }}.tar.bz2
+          asset_content_type: application/x-bzip2
