@@ -21,7 +21,8 @@ mv /home/runner/.local/lib/python3.10/site-packages/Kivy-* /tmp/kivy_appdir/opt/
 # -> uninstall them from the container before installing them into the AppImage dir
 python -m pip uninstall docutils Kivy-Garden pygments
 # Install kivy deps into appdir
-/tmp/kivy_appdir/AppRun -m pip install docutils Kivy-Garden pygments
+# Pillow is a dependency of kivy too, even though it is marked as such
+/tmp/kivy_appdir/AppRun -m pip install docutils Kivy-Garden pygments pillow
 
 # Copy main code into appdir
 mkdir /tmp/kivy_appdir/opt/src
