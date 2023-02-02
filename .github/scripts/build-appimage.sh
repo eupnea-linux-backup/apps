@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # This is a simplified and modified version of a crossplatform kivy build script
 # SOURCE: https://github.com/maltfield/cross-platform-python-gui
 
