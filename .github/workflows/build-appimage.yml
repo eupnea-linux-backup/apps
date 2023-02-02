@@ -1,4 +1,4 @@
-name: build
+name: Build AppImage
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  linux:
+  build-appimage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,6 +30,7 @@ jobs:
           # Kivy refuses to build inside the appdir due to missing build deps -> build inside container first
           python3 -m pip install "kivy[base] @ https://github.com/kivy/kivy/archive/stable.zip"
           python3 -m pip show kivy
+          asddsa
           # If pip detects the dependencies in the container, it will refuse to install them into the AppImage dir
           # -> uninstall them before installing them into the AppImage dir
           python -m pip uninstall docutils Kivy-Garden pygments
