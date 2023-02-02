@@ -13,15 +13,13 @@ python3 -m pip install "kivy[base] @ https://github.com/kivy/kivy/archive/stable
 
 # Move the compiled kivy packages into the appdir
 mv /home/runner/.local/lib/python3.10/site-packages/kivy /tmp/kivy_appdir/opt/python3.10/lib/python3.10/site-packages/
-mv /home/runner/.local/lib/python3.10/site-packages/Kivy.libs /tmp/kivy_appdir/opt/python3.10/lib/python3.10/site-packages/
 mv /home/runner/.local/lib/python3.10/site-packages/Kivy-* /tmp/kivy_appdir/opt/python3.10/lib/python3.10/site-packages/
 
-# Install kivy deps into the appimage
-# If pip detects the dependencies in the container, it will refuse to install them into the AppImage dir
+# If pip detects the dependencies in the ubuntu container, it will refuse to install them into the AppImage dir
 # -> uninstall them from the container before installing them into the AppImage dir
 python -m pip uninstall docutils Kivy-Garden pygments
 # Install kivy deps into appdir
-# Pillow is a dependency of kivy too, even though it is marked as such
+# Pillow is a dependency of kivy too, even though it is marked as one
 /tmp/kivy_appdir/AppRun -m pip install docutils Kivy-Garden pygments pillow
 
 # Copy main code into appdir
