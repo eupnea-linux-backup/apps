@@ -24,7 +24,7 @@ python -m pip uninstall docutils Kivy-Garden pygments
 /tmp/kivy_appdir/AppRun -m pip install docutils Kivy-Garden pygments
 
 # Copy main code into appdir
-cp ./* /tmp/kivy_appdir/opt/
+cp ./* /tmp/kivy_appdir/opt/src/
 
 # Add AppRun
 rm /tmp/kivy_appdir/AppRun # Remove old AppRun
