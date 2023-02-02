@@ -32,9 +32,7 @@ class SetupScreen3(Screen):
     def on_enter(self):
         # Generate layouts dictionaries
         # Parse into list
-        basic_list = []
-        for key, value in self.dictionaries[0].items():
-            basic_list.append(key)
+        basic_list = [key for key, value in self.dictionaries[0].items()]
         basic_list.sort()
 
         # Add basic layouts labels to the scrollview
@@ -237,7 +235,7 @@ class MainApp(App):
         # Window.size = (1920, 1080)
         # Window.size = (1280, 720)
         Window.borderless = True
-        # Window.fullscreen = True
+        Window.fullscreen = True
         window_manager = WindowManager()
         window_manager.current = 'setup_screen_4'
         return window_manager
