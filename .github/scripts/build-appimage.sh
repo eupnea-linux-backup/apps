@@ -49,10 +49,10 @@ dpkg-deb -R ./libsdl2-image-dev*.deb /tmp/libsdl2
 rm *.deb # remove debs
 # copy binaries into appdir
 # Xclip
-cp -r /tmp/xclip/usr/bin /tmp/kivy_appdir/usr/bin
+cp -r /tmp/xclip/usr/bin /tmp/kivy_appdir/usr
 # SDL2
-cp -r /tmp/libsdl2/usr/include /tmp/kivy_appdir/usr/include
-cp -r /tmp/libsdl2/usr/lib /tmp/kivy_appdir/usr/lib
+cp -r /tmp/libsdl2/usr/include /tmp/kivy_appdir/usr
+cp -r /tmp/libsdl2/usr/lib /tmp/kivy_appdir/usr
 
 # Clean appdir
 echo "Uninstalling unneeded python dependencies from appdir"
