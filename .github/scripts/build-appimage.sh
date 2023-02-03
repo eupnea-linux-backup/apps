@@ -19,7 +19,7 @@ mv /home/runner/.local/lib/python3.10/site-packages/Kivy-* /tmp/kivy_appdir/opt/
 
 # If pip detects the dependencies in the ubuntu container, it will refuse to install them into the AppImage dir
 # -> uninstall them from the container before installing them into the AppImage dir
-python -m pip uninstall docutils Kivy-Garden pygments
+python -m pip uninstall -y docutils Kivy-Garden pygments
 # Install kivy deps into appdir
 # Pillow is a dependency of kivy too, even though it is marked as one
 /tmp/kivy_appdir/AppRun -m pip install docutils Kivy-Garden pygments pillow
