@@ -6,6 +6,7 @@ here="${self%/*}"
 APPDIR="${APPDIR:-${here}}"
 
 # Export TCl/Tk
+export PATH=$PATH:"${APPDIR}/usr/bin"
 export TCL_LIBRARY="${APPDIR}/usr/share/tcltk/$(ls -A ${APPDIR}/usr/share/tcltk/ | head -1)"
 export TK_LIBRARY="${APPDIR}/usr/share/tcltk/$(ls -A ${APPDIR}/usr/share/tcltk/ | tail -1)"
 export TKPATH="${TK_LIBRARY}"
