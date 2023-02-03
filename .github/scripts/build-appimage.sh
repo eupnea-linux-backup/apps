@@ -18,7 +18,7 @@ curl -L https://github.com/kivy/kivy/archive/stable.zip -o /tmp/kivy.zip
 unzip /tmp/kivy.zip -d /tmp/
 # Edit kivy setup.py to enable wayland and x11 support
 sed "0,/c_options['use_wayland'] = False/s//c_options['use_wayland'] = True/" /tmp/kivy-stable/setup.py
-# sed "0,/c_options['use_x11'] = False/s//c_options['use_x11'] = True/" /tmp/kivy-stable/setup.py
+sed "0,/c_options['use_x11'] = False/s//c_options['use_x11'] = True/" /tmp/kivy-stable/setup.py
 # compile kivy
 python3 -m pip install /tmp/kivy-stable/[base]
 
