@@ -39,6 +39,16 @@ echo "Replaceing AppRun"
 rm /tmp/kivy_appdir/AppRun # Remove old AppRun
 cp configs/AppRun /tmp/kivy_appdir/AppRun
 
+# Install xclip into AppRun
+# xclip is needed for Kivy on X11 systems
+echo "Adding xclip"
+cd /tmp
+apt-get download xclip # download debian xclip bin
+cd ~
+mkdir /tmp/xclip
+dpkg-deb -R /tmp/xclip*.deb /tmp/xclip # extract bin
+cp /tmp/xclip/usr/bin/* /tmp/kivy_appdir/usr/bin/ # copy executables from deb
+
 # Build AppImage
 echo "Building AppImage"
 chmod +x /tmp/appimagetool.AppImage # make appimagetool executable
