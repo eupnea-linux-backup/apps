@@ -188,7 +188,7 @@
             text: "Select keyboard layout"
             font_size: 40
             halign: "center"
-            valign: "center"
+            valign: "bottom"
             size_hint: 1, None
             pos_hint_y: 1
             background_color: (0, 0, 0, 0)
@@ -199,9 +199,14 @@
                     pos: self.pos
                     size: self.size
 
+        Image:
+            source: "assets/blank_icons/blank.png"
+
         BoxLayout:
             orientation: "horizontal"
-            spacing: 20
+            spacing: 50
+            size_hint: 1, 3
+
 
 
             ScrollView:
@@ -236,6 +241,7 @@
         BoxLayout:
             orientation: "horizontal"
             #padding: 300
+            size_hint: 1, 4.2
             RoundedButton:
                 text: "Back"
                 size_hint: 0.3, 0.3
@@ -313,6 +319,7 @@
                 pos_hint: {"center_y": 0.9}
             TextInput:
                 id: username_input
+                hint_text: "localuser"
                 multiline: False
                 write_tab: False
                 on_text: root.check_username()
@@ -416,9 +423,11 @@
                 pos_hint: {"center_y": 0.9}
             TextInput:
                 id: hostname_input
+                hint_text: ""
+                on_text: root.check_hostname()
                 multiline: False
                 write_tab: False
-                text: "delbin"
+                text: ""
                 font_size: self.height/2
                 foreground_color: (1, 1, 1, 1)
                 size_hint: 0.2, None
