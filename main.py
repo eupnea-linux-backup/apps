@@ -301,7 +301,7 @@ class MainApp(App):
         Window.borderless = True
         Window.fullscreen = "auto"
         window_manager = WindowManager()
-        window_manager.current = 'setup_screen_4'
+        window_manager.current = 'setup_screen_1'
         return window_manager
 
 
