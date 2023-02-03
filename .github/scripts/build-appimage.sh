@@ -54,6 +54,11 @@ cp -r /tmp/xclip/usr/bin /tmp/kivy_appdir/usr/bin
 cp -r /tmp/libsdl2/usr/include /tmp/kivy_appdir/usr/include
 cp -r /tmp/libsdl2/usr/lib /tmp/kivy_appdir/usr/lib
 
+# Clean appdir
+echo "Uninstalling unneeded python dependencies from appdir"
+/tmp/kivy_appdir/AppRun -m pip uninstall -y wheel build setuptools urllib3 tomli pyproject_hooks pkg_resources packaging idna charset_normalizer certifi
+/tmp/kivy_appdir/AppRun -m pip uninstall -y pip
+
 # Copy main code into appdir
 echo "Copying eupnea-initial-setup code into appdir"
 mkdir /tmp/kivy_appdir/opt/src
@@ -63,11 +68,6 @@ cp -r ./* /tmp/kivy_appdir/opt/src/
 echo "Replaceing AppRun"
 rm /tmp/kivy_appdir/AppRun # Remove old AppRun
 cp configs/AppRun /tmp/kivy_appdir/AppRun
-
-# Clean appdir
-echo "Uninstalling unneeded python dependencies from appdir"
-/tmp/kivy_appdir/AppRun -m pip uninstall -y wheel build setuptools urllib3 tomli pyproject_hooks pkg_resources packaging idna charset_normalizer certifi
-/tmp/kivy_appdir/AppRun -m pip uninstall -y pip
 
 # Build AppImage
 echo "Building AppImage"
