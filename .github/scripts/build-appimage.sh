@@ -36,6 +36,25 @@ python -m pip uninstall -y docutils Kivy-Garden pygments pillow
 echo "Installing dependencies into appdir"
 /tmp/kivy_appdir/AppRun -m pip install docutils Kivy-Garden pygments pillow
 
+# Unpack non python deps into appdir
+echo "Installing non python dependencies"
+cd /tmp
+# xclip is needed for Kivy on X11 systems
+# libsdl2-image-dev is not preinstalled on some systems, i.e. Pop!_OS 22.04
+apt-get download xclip libsdl2-image-dev
+cd ~
+# extract debs
+mkdir /tmp/xclip
+dpkg-deb -R /tmp/xclip*.deb /tmp/xclip
+mkdir /tmp/libsdl2
+dpkg-deb -R /tmp/libsdl2-image-dev*.deb /tmp/libsdl2
+# copy binaries into appdir
+# Xclip
+cp -r /tmp/xclip/usr/bin /tmp/kivy_appdir/usr/bin
+# SDL2
+cp -r /tmp/libsdl2/usr/include /tmp/kivy_appdir/usr/include
+cp -r /tmp/libsdl2/usr/lib /tmp/kivy_appdir/usr/lib
+
 # Copy main code into appdir
 echo "Copying eupnea-initial-setup code into appdir"
 mkdir /tmp/kivy_appdir/opt/src
@@ -46,15 +65,10 @@ echo "Replaceing AppRun"
 rm /tmp/kivy_appdir/AppRun # Remove old AppRun
 cp configs/AppRun /tmp/kivy_appdir/AppRun
 
-# Install xclip into AppRun
-# xclip is needed for Kivy on X11 systems
-echo "Adding xclip"
-cd /tmp
-apt-get download xclip # download debian xclip bin
-cd ~
-mkdir /tmp/xclip
-dpkg-deb -R /tmp/xclip*.deb /tmp/xclip            # extract bin
-cp /tmp/xclip/usr/bin/* /tmp/kivy_appdir/usr/bin/ # copy executables from deb
+# Clean appdir
+echo "Uninstalling unneeded python dependencies from appdir"
+/tmp/kivy_appdir/AppRun -m pip uninstall -y wheel build setuptools urllib3 tomli pyproject_hooks pkg_resources packaging idna charset_normalizer certifi
+/tmp/kivy_appdir/AppRun -m pip uninstall -y pip
 
 # Build AppImage
 echo "Building AppImage"
