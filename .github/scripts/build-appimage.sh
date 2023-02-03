@@ -52,7 +52,7 @@ rm *.deb # remove debs
 cp -r /tmp/xclip/usr/bin /tmp/kivy_appdir/usr
 # SDL2
 cp -r /tmp/libsdl2/usr/include /tmp/kivy_appdir/usr
-cp -r /tmp/libsdl2/usr/lib /tmp/kivy_appdir/usr
+cp -r /tmp/libsdl2/usr/lib/x86_64-linux-gnu/libSDL2_image.* /tmp/kivy_appdir/usr/lib
 
 # Clean appdir
 echo "Uninstalling unneeded python dependencies from appdir"
