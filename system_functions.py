@@ -38,11 +38,24 @@ def parse_keyboard_layouts() -> Tuple[dict, dict]:
         except KeyError:  # if key1 is not in dict yet
             advanced_dict[key1] = {key2: value}
 
+    # Add basic layouts to advanced layouts
+    for key, value in basic_dict.items():
+        try:
+            advanced_dict[value][key] = value
+        except KeyError:  # if key is not in dict yet
+            advanced_dict[value] = {key: value}
     return basic_dict, advanced_dict
 
 
 def set_keyboard_layout(layout: str) -> None:
     print(f"Setting keyboard layout to: {layout}")
+
+
+def get_hostname() -> str:
+    """Returns the hostname of the system"""
+    with open("/sys/devices/virtual/dmi/id/product_name", "r") as file:
+        product_name = file.read().strip().lower()
+    return product_name
 
 
 def get_wifi_list() -> list:

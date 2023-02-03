@@ -106,11 +106,20 @@ class SetupScreen3(Screen):
         self.manager.get_screen("setup_screen_3").ids.next_button_3.disabled = False
         self.manager.get_screen("setup_screen_3").ids.next_button_3.state = "normal"
 
+    # next button clicked
     def button_clicked(self, instance) -> None:
         system_functions.set_keyboard_layout(self.selected_layout)
 
 
 class SetupScreen4(Screen):
+
+    # This function will be called every time the screen is displayed
+    def on_enter(self):
+        self.manager.get_screen("setup_screen_4").ids.username_input.focus = True
+
+        if self.manager.get_screen("setup_screen_4").ids.hostname_input.text == "":
+            self.manager.get_screen("setup_screen_4").ids.hostname_input.text = system_functions.get_hostname()
+            self.manager.get_screen("setup_screen_4").ids.hostname_input.hint_text = system_functions.get_hostname()
 
     def clear_username_error(self):
         self.manager.get_screen("setup_screen_4").ids.username_error.text = ""
@@ -164,7 +173,7 @@ class SetupScreen4(Screen):
 
         # Only allow chars from dictionary below
         for char in self.manager.get_screen("setup_screen_4").ids.username_input.text:
-            if char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-":
+            if char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-":
                 self.manager.get_screen(
                     "setup_screen_4").ids.username_error.text = f"Username contains invalid character: {char}"
                 self.manager.get_screen(
@@ -173,6 +182,61 @@ class SetupScreen4(Screen):
         # if no invalid chars are found revert to normal
         self.manager.get_screen("setup_screen_4").ids.username_input.background_normal = "assets/textfield/normal.png"
         self.manager.get_screen("setup_screen_4").ids.username_error.text = ""
+
+    def check_hostname(self) -> None:
+        # Don't check if hostname is empty and revert to normal
+        if self.manager.get_screen("setup_screen_4").ids.hostname_input.text == "":
+            self.manager.get_screen(
+                "setup_screen_4").ids.hostname_input.background_normal = "assets/textfield/normal.png"
+            self.manager.get_screen("setup_screen_4").ids.hostname_error.text = ""
+            return
+
+        # Check for spaces inside hostname
+        if " " in self.manager.get_screen("setup_screen_4").ids.hostname_input.text:
+            self.manager.get_screen("setup_screen_4").ids.hostname_error.text = "hostname cannot contain spaces"
+            self.manager.get_screen(
+                "setup_screen_4").ids.hostname_input.background_normal = "assets/textfield/error.png"
+            return
+
+        # Don't allow dash at the beginning
+        if self.manager.get_screen("setup_screen_4").ids.hostname_input.text[0] == "-":
+            self.manager.get_screen("setup_screen_4").ids.hostname_error.text = "hostname can't start with a dash"
+            self.manager.get_screen(
+                "setup_screen_4").ids.hostname_input.background_normal = "assets/textfield/error.png"
+            return
+
+        # Don't allow dash at the end
+        if self.manager.get_screen("setup_screen_4").ids.hostname_input.text[-1] == "-":
+            self.manager.get_screen("setup_screen_4").ids.hostname_error.text = "hostname can't end with a dash"
+            self.manager.get_screen(
+                "setup_screen_4").ids.hostname_input.background_normal = "assets/textfield/error.png"
+            return
+
+        # Don't allow dot at the beginning
+        if self.manager.get_screen("setup_screen_4").ids.hostname_input.text[0] == ".":
+            self.manager.get_screen("setup_screen_4").ids.hostname_error.text = "hostname can't start with a dor"
+            self.manager.get_screen(
+                "setup_screen_4").ids.hostname_input.background_normal = "assets/textfield/error.png"
+            return
+
+        # Don't allow dot at the end
+        if self.manager.get_screen("setup_screen_4").ids.hostname_input.text[-1] == ".":
+            self.manager.get_screen("setup_screen_4").ids.hostname_error.text = "hostname can't end with a dot"
+            self.manager.get_screen(
+                "setup_screen_4").ids.hostname_input.background_normal = "assets/textfield/error.png"
+            return
+
+        # Only allow chars from dictionary below
+        for char in self.manager.get_screen("setup_screen_4").ids.hostname_input.text:
+            if char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-":
+                self.manager.get_screen(
+                    "setup_screen_4").ids.hostname_error.text = f"hostname contains invalid character: {char}"
+                self.manager.get_screen(
+                    "setup_screen_4").ids.hostname_input.background_normal = "assets/textfield/error.png"
+                return
+        # if no invalid chars are found revert to normal
+        self.manager.get_screen("setup_screen_4").ids.hostname_input.background_normal = "assets/textfield/normal.png"
+        self.manager.get_screen("setup_screen_4").ids.hostname_error.text = ""
 
 
 class SetupScreen5(Screen):
