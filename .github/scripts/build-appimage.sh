@@ -13,7 +13,14 @@ mv squashfs-root /tmp/kivy_appdir
 
 # Kivy refuses to build inside the appdir due to missing build deps -> build inside container first
 echo "Compiling kivy"
-python3 -m pip install "kivy[base] @ https://github.com/kivy/kivy/archive/stable.zip"
+# Download kivy stable zip
+curl -L https://github.com/kivy/kivy/archive/stable.zip -o /tmp/kivy.zip
+unzip /tmp/kivy.zip -d /tmp/
+# Edit kivy setup.py to enable wayland and x11 support
+sed "0,/c_options['use_wayland'] = False/s//c_options['use_wayland'] = True/" /tmp/kivy-stable/setup.py
+sed "0,/c_options['use_x11'] = False/s//c_options['use_x11'] = True/" /tmp/kivy-stable/setup.py
+# compile kivy
+python3 -m pip install /tmp/kivy-stable/[base]
 
 # Move the compiled kivy packages into the appdir
 echo "Copying kivy into appdir"
@@ -46,7 +53,7 @@ cd /tmp
 apt-get download xclip # download debian xclip bin
 cd ~
 mkdir /tmp/xclip
-dpkg-deb -R /tmp/xclip*.deb /tmp/xclip # extract bin
+dpkg-deb -R /tmp/xclip*.deb /tmp/xclip            # extract bin
 cp /tmp/xclip/usr/bin/* /tmp/kivy_appdir/usr/bin/ # copy executables from deb
 
 # Build AppImage
