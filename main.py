@@ -224,8 +224,8 @@ class WindowManager(ScreenManager):
         print(key)
         if key == 27:  # ESC
             return True  # Do nothing
-        if key == 287:  # F6
-            print("F6 pressed, exiting")
+        if key == 223:  # key to the right of "0"
+            print("Emergency exit triggered, exiting")
             exit(0)
 
 
@@ -235,7 +235,7 @@ class MainApp(App):
         # Window.size = (1920, 1080)
         # Window.size = (1280, 720)
         Window.borderless = True
-        Window.fullscreen = True
+        Window.fullscreen = "auto"
         window_manager = WindowManager()
         window_manager.current = 'setup_screen_4'
         return window_manager
