@@ -40,12 +40,12 @@ echo "Installing dependencies into appdir"
 echo "Installing non python dependencies"
 # xclip is needed for Kivy on X11 systems
 # libsdl2-image-dev is not preinstalled on some systems, i.e. Pop!_OS 22.04
-apt-get download xclip libsdl2-image-2.0-0
+apt-get download xclip libsdl2-2.0-0
 # extract debs
 mkdir /tmp/xclip
 dpkg-deb -R ./xclip*.deb /tmp/xclip
 mkdir /tmp/libsdl2
-dpkg-deb -R ./libsdl2-image-2.0-0*.deb /tmp/libsdl2
+dpkg-deb -R ./libsdl2-2.0-0*.deb /tmp/libsdl2
 rm *.deb # remove debs
 # copy binaries into appdir
 # Xclip
