@@ -24,7 +24,7 @@ jobs:
 
       - name: Downloading misc dependencies
         run: |
-          curl -L https://github.com/niess/python-appimage/releases/download/python3.10/python3.10.9-cp310-cp310-manylinux2014_x86_64.AppImage -o /tmp/python.AppImage
+          curl -L https://github.com/niess/python-appimage/releases/download/python3.10/python3.10.10-cp310-cp310-manylinux2014_x86_64.AppImage -o /tmp/python.AppImage
           curl -L https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -o /tmp/appimagetool.AppImage
 
       - name: Building AppImage
