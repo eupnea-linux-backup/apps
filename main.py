@@ -288,7 +288,7 @@ class WindowManager(ScreenManager):
         print(key)
         if key == 27:  # ESC
             return True  # Do nothing
-        if key == 223:  # key to the right of "0"
+        if key in [223, 45]:  # key to the right of "0"
             print("Emergency exit triggered, exiting")
             exit(0)
 
