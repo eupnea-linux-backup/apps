@@ -3,6 +3,12 @@ from typing import Tuple
 from functions import *
 
 
+# Prevent user from opening other apps in any way
+def prevent_super_key() -> None:
+    print("Preventing other apps from being opened")
+    # TODO: Maybe use keyd for this?
+
+
 def parse_keyboard_layouts() -> Tuple[dict, dict]:
     """Parses the layouts from /usr/share/X11/xkb/rules/base.lst and returns a python list of all the layouts"""
     with open("/usr/share/X11/xkb/rules/base.lst", "r") as file:
