@@ -107,8 +107,6 @@
                 source: "assets/blank_icons/blank.png"
             Image:
                 source: "assets/drive_icons/disc.png"
-                on_touch_down:
-                    root.image_clicked(self) if self.collide_point(*args[1].pos) else False
             RoundedButton:
                 # TODO: Dynamically say sdcard or usb
                 text: "Try without installing"
@@ -131,8 +129,6 @@
                 # TODO: Dynamic icon
                 source: "assets/drive_icons/usb.png"
                 # source: "assets/drive_icons/sd.png"
-                on_touch_down:
-                    root.image_clicked(self) if self.collide_point(*args[1].pos) else False
             RoundedButton:
                 # TODO: Dynamically say sdcard or usb
                 text: "Install to USB/SD-card"
@@ -153,8 +149,6 @@
                 source: "assets/blank_icons/blank.png"
             Image:
                 source: "assets/drive_icons/hdd.png"
-                on_touch_down:
-                    root.image_clicked(self) if self.collide_point(*args[1].pos) else False
             RoundedButton:
                 # TODO: Dynamically say replace ChromeOS or just install
                 text: "Install to internal"
