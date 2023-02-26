@@ -40,22 +40,26 @@ echo "Installing dependencies into appdir"
 echo "Installing non python dependencies"
 # xclip is needed for Kivy on X11 systems
 # libsdl2-image-dev is not preinstalled on some systems, i.e. Pop!_OS 22.04
-apt-get download xclip libsdl2-2.0-0 libsdl2-image-2.0-0 libdecor-0-0
+# libjpeg-turbo8 is needed on Fedora
+apt-get download xclip libsdl2-2.0-0 libsdl2-image-2.0-0 libjpeg-turbo8 libdecor-0-0
 # extract debs
 mkdir /tmp/xclip
 mkdir /tmp/libsdl2
 mkdir /tmp/libsdl2-image
 mkdir /tmp/libdecor
+mkdir /tmp/libjpeg-turbo8
 dpkg-deb -R ./xclip*.deb /tmp/xclip
 dpkg-deb -R ./libsdl2-2.0-0*.deb /tmp/libsdl2
 dpkg-deb -R ./libsdl2-image-2.0-0*.deb /tmp/libsdl2-image
 dpkg-deb -R ./libdecor-0-0*.deb /tmp/libdecor
+dpkg-deb -R ./libjpeg-turbo8*.deb /tmp/libjpeg-turbo8
 rm *.deb # remove debs
 # copy binaries into appdir
 cp -r /tmp/xclip/usr/bin /tmp/kivy_appdir/usr
 cp -r /tmp/libsdl2/usr/lib/* /tmp/kivy_appdir/usr/lib
 cp -r /tmp/libsdl2-image/usr/lib/* /tmp/kivy_appdir/usr/lib
 cp -r /tmp/libdecor/usr/lib/* /tmp/kivy_appdir/usr/lib
+cp -r /tmp/libjpeg-turbo8/usr/lib/* /tmp/kivy_appdir/usr/lib
 
 # Clean appdir
 echo "Uninstalling unneeded python dependencies from appdir"
