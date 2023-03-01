@@ -79,4 +79,4 @@ cp configs/AppRun /tmp/kivy_appdir/AppRun
 # Build AppImage
 echo "Building AppImage"
 chmod +x /tmp/appimagetool.AppImage # make appimagetool executable
-/tmp/appimagetool.AppImage /tmp/kivy_appdir /tmp/eupnea-initial-setup.AppImage
+/tmp/appimagetool.AppImage /tmp/kivy_appdir /tmp/eupnea-setup.AppImage
