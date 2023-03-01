@@ -15,7 +15,9 @@ jobs:
         run: git clone https://github.com/eupnea-linux/python-os-functions
 
       - name: Updating functions.py
-        run: cp ./python-os-functions/functions.py ./functions.py
+        run: |
+          cp ./python-os-functions/functions.py ./eupnea-initial-installer/functions.py
+          cp ./python-os-functions/functions.py ./eupnea-settings/functions.py
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:

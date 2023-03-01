@@ -2,7 +2,7 @@
 
 set -e
 
-# This is a simplified and modified version of a crossplatform kivy build script
+# This is a simplified and modified version of a cross-platform kivy build script
 # SOURCE: https://github.com/maltfield/cross-platform-python-gui
 
 # Create AppImage root and copy files into it
@@ -69,7 +69,7 @@ echo "Uninstalling unneeded python dependencies from appdir"
 # Copy main code into appdir
 echo "Copying eupnea-initial-setup code into appdir"
 mkdir /tmp/kivy_appdir/opt/src
-cp -r ./* /tmp/kivy_appdir/opt/src/
+cp -r ./eupnea-settings/* /tmp/kivy_appdir/opt/src/
 
 # Add AppRun
 echo "Replaceing AppRun"
