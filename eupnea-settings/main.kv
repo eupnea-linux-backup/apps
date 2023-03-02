@@ -6,9 +6,9 @@
 
 <CustomLabel@Label>
     font_size: 20
-    halign: "center"
     valign: "center"
     size_hint: 1, None
+    text_size: self.size
     height: 30
     background_color: (0, 0, 0, 0)
     canvas.before:
@@ -22,7 +22,10 @@
     color: hex('#ffffff') if self.state == 'normal' else hex('#f7fcfa')
     background_normal: ""
     background_color: (0,0,0,0)
-    font_size: self.width/10
+    font_size: 20
+    valign: "center"
+    halign: "center"
+    text_size: self.size
     canvas.before:
         Color:
             rgba: hex('#17181a') if self.state == 'normal' else hex('#4f5055')
@@ -40,6 +43,7 @@
     AnchorLayout:
         anchor_x: "left"
         anchor_y: "center"
+
         # Background image
         Image:
             source: "assets/backgrounds/dark.png"
@@ -68,37 +72,37 @@
                         id: side_bar_button_1
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
-                        on_press: root.button_clicked(self)
+                        on_press: root.side_bar_button_clicked(self)
                     MenuButton:
                         text: "Install location"
                         id: side_bar_button_2
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
-                        on_press: root.button_clicked(self)
+                        on_press: root.side_bar_button_clicked(self)
                     MenuButton:
                         text: "Kernel"
                         id: side_bar_button_3
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
-                        on_press: root.button_clicked(self)
+                        on_press: root.side_bar_button_clicked(self)
                     MenuButton:
                         text: "ZRAM"
                         id: side_bar_button_4
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
-                        on_press: root.button_clicked(self)
+                        on_press: root.side_bar_button_clicked(self)
                     MenuButton:
                         text: "About"
                         id: side_bar_button_5
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
-                        on_press: root.button_clicked(self)
+                        on_press: root.side_bar_button_clicked(self)
                     MenuButton:
                         text: "Help"
                         id: side_bar_button_6
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
-                        on_press: root.button_clicked(self)
+                        on_press: root.side_bar_button_clicked(self)
                     # This button is just here to help the other buttons set their sizes.
                     MenuButton:
                         text: ""
@@ -109,6 +113,8 @@
             BoxLayout:
                 orientation: "vertical"
                 size_hint: 0.78, 1
+                padding: 50
+                id: screen_content_box
 
 
 
