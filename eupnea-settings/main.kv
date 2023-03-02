@@ -74,32 +74,38 @@
                         height: side_bar_fake_button.height / 2
                         on_press: root.side_bar_button_clicked(self)
                     MenuButton:
-                        text: "Install location"
+                        text: "Keyboard"
                         id: side_bar_button_2
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
                         on_press: root.side_bar_button_clicked(self)
                     MenuButton:
-                        text: "Kernel"
+                        text: "Install location"
                         id: side_bar_button_3
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
                         on_press: root.side_bar_button_clicked(self)
                     MenuButton:
-                        text: "ZRAM"
+                        text: "Kernel"
                         id: side_bar_button_4
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
                         on_press: root.side_bar_button_clicked(self)
                     MenuButton:
-                        text: "About"
+                        text: "ZRAM"
                         id: side_bar_button_5
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
                         on_press: root.side_bar_button_clicked(self)
                     MenuButton:
-                        text: "Help"
+                        text: "About"
                         id: side_bar_button_6
+                        size_hint_y: None
+                        height: side_bar_fake_button.height / 2
+                        on_press: root.side_bar_button_clicked(self)
+                    MenuButton:
+                        text: "Help"
+                        id: side_bar_button_7
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
                         on_press: root.side_bar_button_clicked(self)
@@ -128,6 +134,7 @@
     Screen4:
     Screen5:
     Screen6:
+    Screen7:
 
 <BlankScreen>:
     name: "blank"
@@ -151,3 +158,5 @@
     name: "screen_5"
 <Screen6@SettingsScreen>:
     name: "screen_6"
+<Screen7@SettingsScreen>:
+    name: "screen_7"

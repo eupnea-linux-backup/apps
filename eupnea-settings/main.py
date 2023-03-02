@@ -13,7 +13,7 @@ Config.set('input', 'mouse', 'mouse,disable_multitouch')
 from functions import *
 
 global sidebar_buttons
-sidebar_buttons = ["Audio", "Install location", "Kernel", "ZRAM", "About", "Help"]
+sidebar_buttons = ["Audio", "Keyboard", "Install location", "Kernel", "ZRAM", "About", "Help"]
 
 
 class BlankScreen(Screen):
@@ -42,23 +42,27 @@ class SettingsScreen(Screen):
         self.manager.current = f"screen_{sidebar_buttons.index(instance.text) + 1}"
 
 
-class Screen1(SettingsScreen):
+class Screen1(SettingsScreen):  # audio
     pass
 
 
-class Screen2(SettingsScreen):
+class Screen2(SettingsScreen):  # keyboard
     pass
 
 
-class Screen3(SettingsScreen):
+class Screen3(SettingsScreen):  # install location
     pass
 
 
-class Screen4(SettingsScreen):
+class Screen4(SettingsScreen):  # kernel
     pass
 
 
-class Screen5(SettingsScreen):  # about
+class Screen5(SettingsScreen):  # ZRAM
+    pass
+
+
+class Screen6(SettingsScreen):  # about
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.first_enter = True
@@ -112,12 +116,11 @@ class Screen5(SettingsScreen):  # about
                   data["distro_version"], "", data["distro_name"].capitalize()]
 
         for index, label in enumerate(self.manager.get_screen(self.name).ids.help_screen_grid_layout.children):
-            print(index, label.text)
             if label.text == "":
                 label.text = labels[index]
 
 
-class Screen6(SettingsScreen):
+class Screen7(SettingsScreen):  # help
     pass
 
 
