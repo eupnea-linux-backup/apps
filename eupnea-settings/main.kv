@@ -41,12 +41,11 @@
     BoxLayout:
         orientation: "horizontal"
         size: root.width, root.height
-        #  size: root.width, root.height
 
         ScrollView:
             effect_cls: "ScrollEffect"
             pos_hint_y: 0.1
-            size_hint: 0.058, 1
+            size_hint: 0.22, 1
             do_scroll_x: False
             do_scroll_y: True
             scroll_wheel_distance: 100
@@ -100,9 +99,13 @@
                     id: side_bar_fake_button
                     size_hint: 1, None
 
-        Image:
-            source: "assets/blank_icons/green.png"
-            size_hint: 0.2, 1
+        BoxLayout:
+            orientation: "vertical"
+            size_hint: 0.78, 1
+
+            Image:
+                source: "assets/blank_icons/green.png"
+
 
 <WindowManager>:
     BlankScreen:
