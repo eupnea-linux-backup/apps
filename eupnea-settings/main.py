@@ -68,6 +68,7 @@ class MainApp(App):
         self.title = 'Audio'
         Window.clearcolor = (30 / 255, 32 / 255, 36 / 255, 1)  # color between transitions
         window_manager = WindowManager()
+        window_manager.transition.duration = 0
         window_manager.current = 'screen_1'
         return window_manager
 
