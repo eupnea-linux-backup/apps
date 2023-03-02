@@ -23,11 +23,10 @@ class SettingsScreen(Screen):
             if button.text != sidebar_buttons[int(self.name[7:]) - 1]:
                 button.disabled = False
                 button.state = "normal"
-                button.background_color = (0, 0, 0, 1)
             else:
                 button.disabled = True
-                # button.state = "down"
-                button.background_color = (1, 1, 1, 1)
+                button.state = "down"
+                App.get_running_app().title = button.text
 
     def button_clicked(self, instance):
         # install_type = instance.install_type
@@ -66,7 +65,7 @@ class WindowManager(ScreenManager):
 
 class MainApp(App):
     def build(self):
-        self.title = 'Eupnea settings'
+        self.title = 'Audio'
         Window.clearcolor = (30 / 255, 32 / 255, 36 / 255, 1)  # color between transitions
         window_manager = WindowManager()
         window_manager.current = 'screen_1'
