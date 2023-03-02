@@ -16,7 +16,7 @@ jobs:
 
       - name: Updating functions.py
         run: |
-          cp ./python-os-functions/functions.py ./eupnea-initial-installer/functions.py
+          cp ./python-os-functions/functions.py ./eupnea-setup/functions.py
           cp ./python-os-functions/functions.py ./eupnea-settings/functions.py
 
       - uses: stefanzweifel/git-auto-commit-action@v4
@@ -35,4 +35,4 @@ jobs:
           # See the `pathspec`-documentation for git
           # - https://git-scm.com/docs/git-add#Documentation/git-add.txt-ltpathspecgt82308203
           # - https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
-          file_pattern: 'functions.py'
+          file_pattern: '/eupnea-settings/functions.py /eupnea-setup/functions.py'
