@@ -33,6 +33,19 @@
             pos: self.pos
             size: self.size
 
+<RoundedButton@Button>
+    color: hex('#f7fcfa') if self.state == 'normal' else hex('#f7fcfa')
+    background_normal: ""
+    background_color: (0,0,0,0)
+    font_size: self.width / 12
+    canvas.before:
+        Color:
+            rgba: hex('#00bc7d') if self.state == 'normal' else hex('#2f312c')
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [self.width/25]
+
 <SettingsScreen@Screen>:
     canvas.before:
         Color:
