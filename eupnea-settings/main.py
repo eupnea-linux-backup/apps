@@ -1,6 +1,8 @@
 import json
+import time
 
 from kivy.app import App
+from kivy.clock import Clock
 from kivy.config import Config
 from kivy.core.window import Window
 from kivy.factory import Factory
@@ -123,9 +125,10 @@ class Screen4(SettingsScreen):  # kernel
             self.manager.get_screen(self.name).ids.screen_content_box.add_widget(chromeos_kernel_button)
 
             # Add loading gif
-            empty_image = Image(source="assets/loading.gif")
+            empty_image = Factory.LoadingImage(source="assets/blank_icons/blank.png")
             empty_image.size_hint = (0.1, 0.1)
             empty_image.pos_hint = {"center_x": 0.5, "center_y": 0.5}
+            self.ids['loading_image'] = empty_image
             self.manager.get_screen(self.name).ids.screen_content_box.add_widget(empty_image)
 
             self.first_enter = False
@@ -156,6 +159,12 @@ class Screen4(SettingsScreen):  # kernel
             self.name).ids.mainline_kernel_button.text = "Switch to Mainline kernel" if kernel_type == "chromeos" else "Reinstall Mainline kernel"
 
     def kernel_button_clicked(self, instance):
+        def rotate_loading_image():
+            if self.kernel_install_in_process:
+                if self.manager.current == self.name:  # only spin if current screen is visible
+                    self.manager.get_screen(self.name).ids.loading_image.angle -= 5
+                Clock.schedule_once(lambda dt: rotate_loading_image(), 0.025)
+
         if not self.kernel_install_in_process:
             print(f"{instance.text} pressed")
             self.kernel_install_in_process = True
@@ -166,7 +175,13 @@ class Screen4(SettingsScreen):  # kernel
             self.manager.get_screen(self.name).ids.mainline_kernel_button.disabled = True
             self.manager.get_screen(self.name).ids.mainline_kernel_button.state = "down"
 
+            # Start re/installing kernel
+            bash("/usr/lib/eupnea/modify-packages")
+
             # start spinning gif
+            self.manager.get_screen(self.name).ids.loading_image.source = "assets/loading.png"
+            Clock.schedule_once(lambda dt: rotate_loading_image())  # start spinning circle in separate thread
+
 
 
 class Screen5(SettingsScreen):  # ZRAM

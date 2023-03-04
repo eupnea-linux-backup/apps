@@ -18,6 +18,16 @@
             pos: self.pos
             size: self.size
 
+<LoadingImage@Image>
+    angle: 0
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: self.angle
+            origin: self.center
+    canvas.after:
+        PopMatrix
+
 <MenuButton@Button>
     color: hex('#ffffff') if self.state == 'normal' else hex('#f7fcfa')
     background_normal: ""
