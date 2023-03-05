@@ -1,11 +1,11 @@
 import json
-import time
 
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.config import Config
 from kivy.core.window import Window
 from kivy.factory import Factory
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -78,8 +78,10 @@ class Screen3(SettingsScreen):  # install location
 class Screen4(SettingsScreen):  # kernel
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.current_cmdline = ""
         self.first_enter = True
         self.kernel_install_in_process = False
+        self.applying_cmdline = False
 
     def on_enter(self):
         super().on_enter()  # call original on_enter() method
@@ -106,30 +108,65 @@ class Screen4(SettingsScreen):  # kernel
                 self.new_label.halign = "right" if text == "" else "left"
                 self.manager.get_screen(self.name).ids.about_screen_grid_layout.add_widget(self.new_label)
 
+            # Add cmdline button
+            cmdline_button = Factory.RoundedButton()
+            cmdline_button.text = "Edit cmdline"
+            cmdline_button.bind(on_release=self.show_cmdline_popup)
+            cmdline_button.size_hint = (0.5, 0.5)
+            cmdline_button.pos_hint = {"center_x": 0.5}
+            self.ids['cmdline_button'] = cmdline_button
+            self.manager.get_screen(self.name).ids.screen_content_box.add_widget(cmdline_button)
+
+            # # Add empty image
+            # empty_image = Factory.LoadingImage(source="assets/blank_icons/blank_green.png")
+            # empty_image.size_hint = (0.05, 0.05)
+            # self.manager.get_screen(self.name).ids.screen_content_box.add_widget(empty_image)
+
+            # Gridlayout makes the buttons way too big -> use 2 horizontal boxlayouts
+            # add Boxlayouts for kernel buttons
+            temp_box = BoxLayout()
+            temp_box.size_hint = (1, 1)
+            # temp_box.spacing = 10
+            self.ids['mainline_box'] = temp_box
+            self.manager.get_screen(self.name).ids.screen_content_box.add_widget(temp_box)
+
+            temp_box = BoxLayout()
+            temp_box.size_hint = (1, 1)
+            # temp_box.spacing = 10
+            self.ids['chromeos_box'] = temp_box
+            self.manager.get_screen(self.name).ids.screen_content_box.add_widget(temp_box)
+
             # Add mainline kernel button
             mainline_kernel_button = Factory.RoundedButton()
             mainline_kernel_button.text = "Switch to Mainline kernel"
             mainline_kernel_button.bind(on_release=self.kernel_button_clicked)
-            mainline_kernel_button.size_hint = (0.5, 0.1)
-            mainline_kernel_button.pos_hint = {"center_x": 0.5}
+            mainline_kernel_button.size_hint = (0.5, 0.5)
+            mainline_kernel_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
             self.ids['mainline_kernel_button'] = mainline_kernel_button
-            self.manager.get_screen(self.name).ids.screen_content_box.add_widget(mainline_kernel_button)
+            self.manager.get_screen(self.name).ids.mainline_box.add_widget(mainline_kernel_button)
+
+            # Add loading gif
+            loading_image = Factory.LoadingImage(source="assets/blank_icons/blank.png")
+            loading_image.size_hint = (0.5, 0.5)
+            loading_image.pos_hint = {"center_x": 0.5, "center_y": 0.5}
+            self.ids['mainline_loading_image'] = loading_image
+            self.manager.get_screen(self.name).ids.mainline_box.add_widget(loading_image)
 
             # Add ChromeOS kernel button
             chromeos_kernel_button = Factory.RoundedButton()
             chromeos_kernel_button.text = "Switch to ChromeOS kernel"
             chromeos_kernel_button.bind(on_release=self.kernel_button_clicked)
-            chromeos_kernel_button.size_hint = (0.5, 0.1)
-            chromeos_kernel_button.pos_hint = {"center_x": 0.5}
+            chromeos_kernel_button.size_hint = (0.5, 0.5)
+            chromeos_kernel_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
             self.ids['chromeos_kernel_button'] = chromeos_kernel_button
-            self.manager.get_screen(self.name).ids.screen_content_box.add_widget(chromeos_kernel_button)
+            self.manager.get_screen(self.name).ids.chromeos_box.add_widget(chromeos_kernel_button)
 
             # Add loading gif
-            empty_image = Factory.LoadingImage(source="assets/blank_icons/blank.png")
-            empty_image.size_hint = (0.1, 0.1)
-            empty_image.pos_hint = {"center_x": 0.5, "center_y": 0.5}
-            self.ids['loading_image'] = empty_image
-            self.manager.get_screen(self.name).ids.screen_content_box.add_widget(empty_image)
+            loading_image = Factory.LoadingImage(source="assets/blank_icons/blank.png")
+            loading_image.size_hint = (0.5, 0.5)
+            loading_image.pos_hint = {"center_x": 1, "center_y": 0.5}
+            self.ids['chromeos_loading_image'] = loading_image
+            self.manager.get_screen(self.name).ids.chromeos_box.add_widget(loading_image)
 
             self.first_enter = False
 
@@ -182,7 +219,43 @@ class Screen4(SettingsScreen):  # kernel
             self.manager.get_screen(self.name).ids.loading_image.source = "assets/loading.png"
             Clock.schedule_once(lambda dt: rotate_loading_image())  # start spinning circle in separate thread
 
+    def show_cmdline_popup(self, instance):
+        # Create cmdline popup
+        cmdline_popup = Factory.CMDLinePopUp()
+        cmdline_popup.bind(on_dismiss=self.apply_cmdline)
+        self.ids['cmdline_popup'] = cmdline_popup
 
+        try:
+            with open("/proc/cmdline", "r") as f:
+                self.current_cmdline = f.read()
+            print(self.current_cmdline)
+            cmdline_popup.ids.cmdline_input.text = self.current_cmdline
+        except subprocess.CalledProcessError:
+            cmdline_popup.ids.cmdline_input.text = "Error reading cmdline"
+        cmdline_popup.open()
+
+    def apply_cmdline(self, instance):
+        def rotate_loading_image():
+            if self.applying_cmdline:
+                self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_loading_image.angle -= 5
+                Clock.schedule_once(lambda dt: rotate_loading_image(), 0.025)
+
+        print("Checking if cmdline changed")
+        print(self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
+        if self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text != self.current_cmdline:
+            print("Changing cmdline")
+            self.applying_cmdline = True
+
+            # grey out apply button
+            self.manager.get_screen(self.name).ids.cmdline_popup.ids.apply_button.state = "down"
+            self.manager.get_screen(self.name).ids.cmdline_popup.ids.apply_button.disabled = True
+
+            # Set button text
+            self.manager.get_screen(self.name).ids.cmdline_popup.ids.apply_button.text = "Applying cmdline..."
+
+            # Start spinning circle
+            self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_loading_image.source = "assets/loading.png"
+            Clock.schedule_once(lambda dt: rotate_loading_image())  # start spinning circle in separate thread
 
 class Screen5(SettingsScreen):  # ZRAM
     pass
@@ -253,17 +326,25 @@ class Screen7(SettingsScreen):  # help
 
 
 class WindowManager(ScreenManager):
-    pass
+    def __init__(self, **kwargs):
+        super(WindowManager, self).__init__(**kwargs)
+        # Override keyboard controls
+        Window.bind(on_keyboard=self.keyboard)
+
+    # Do not exit when escape is pressed
+    def keyboard(self, window, key, *args):
+        if key == 27:  # ESC
+            return True  # Do nothing
 
 
 class MainApp(App):
     def build(self):
         self.title = 'Audio'
         Window.clearcolor = (30 / 255, 32 / 255, 36 / 255, 1)  # color between transitions
-        window_manager = WindowManager()
-        window_manager.transition.duration = 0
-        window_manager.current = 'screen_1'
-        return window_manager
+        self.window_manager = WindowManager()
+        self.window_manager.transition.duration = 0
+        self.window_manager.current = 'screen_1'
+        return self.window_manager
 
 
 if __name__ == '__main__':

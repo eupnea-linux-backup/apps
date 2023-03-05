@@ -28,6 +28,40 @@
     canvas.after:
         PopMatrix
 
+<CMDLinePopUp@Popup>
+    title: "Edit kernel cmdline"
+    title_align: "center"
+    title_size: 20
+    separator_color: (0, 0, 0, 0) # hide separator
+    auto_dismiss: False
+    background: ""
+    screen: app.window_manager.get_screen("screen_4")
+    background_color: hex('#1e2024')
+    size_hint: 0.7, 0.7
+    BoxLayout:
+        orientation: "vertical"
+        size_hint: 1, 1
+        spacing: 10
+        TextInput:
+            id: cmdline_input
+            foreground_color: (1, 1, 1, 1)
+            font_size: 17
+            text: ""
+            height: 40
+            background_color: hex("4f5055")
+
+        BoxLayout
+            orientation: "horizontal"
+            size_hint: 1, 0.2
+            RoundedButton:
+                id: apply_button
+                text: "Apply changes"
+                on_press: root.screen.apply_cmdline(self)
+
+            LoadingImage:
+                source: "assets/blank_icons/blank.png"
+                id: cmdline_loading_image
+
 <MenuButton@Button>
     color: hex('#ffffff') if self.state == 'normal' else hex('#f7fcfa')
     background_normal: ""
@@ -38,7 +72,7 @@
     text_size: self.size
     canvas.before:
         Color:
-            rgba: hex('#17181a') if self.state == 'normal' else hex('#4f5055')
+            rgba: rgba("#4f5055") if self.disabled or self.state == 'down' else rgba("#17181a")
         Rectangle:
             pos: self.pos
             size: self.size
