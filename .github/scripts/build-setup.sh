@@ -39,7 +39,6 @@ echo "Installing dependencies into appdir"
 # Unpack non python deps into appdir
 echo "Installing non python dependencies"
 # make dirs
-mkdir /tmp/xclip
 mkdir /tmp/{xclip,libsdl2,libsdl2-image,libdecor,libjpeg-turbo8,libtiff5,libjbig0,libdeflate0}
 # xclip is needed for Kivy on X11 systems
 # libsdl2 dependencies are needed on some systems
