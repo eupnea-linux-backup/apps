@@ -230,7 +230,6 @@ class Screen4(SettingsScreen):  # kernel
     def show_cmdline_popup(self, instance):
         # Create cmdline popup
         cmdline_popup = Factory.CMDLinePopUp()
-        cmdline_popup.bind(on_dismiss=self.apply_cmdline)
         self.ids['cmdline_popup'] = cmdline_popup
 
         try:
@@ -242,14 +241,24 @@ class Screen4(SettingsScreen):  # kernel
             cmdline_popup.ids.cmdline_input.text = "Error reading cmdline"
         cmdline_popup.open()
 
+    # This function is called from kv only
     def apply_cmdline(self, instance):
         def rotate_loading_image():
             if self.applying_cmdline:
-                print(self.applying_cmdline)
                 self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_loading_image.angle -= 5
                 Clock.schedule_once(lambda dt: rotate_loading_image(), 0.025)
 
-        def run_install_kernel():
+        def __apply_cmdline():
+            # Start rotating loading image
+            Clock.schedule_once(lambda dt: rotate_loading_image())
+
+            # The error popup needs a function as the code cannot wait in kivy
+            def __dismiss_popups(instance):
+                self.applying_cmdline = False
+                with contextlib.suppress(NameError):
+                    error_popup.dismiss()  # error popup doesnt exist if there was no error
+                self.manager.get_screen(self.name).ids.cmdline_popup.dismiss()
+
             # Create new cmdline file
             with open("/tmp/new_cmdline", "w") as f:
                 f.write(self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
@@ -257,23 +266,21 @@ class Screen4(SettingsScreen):  # kernel
             try:
                 bash("/usr/lib/eupnea/install-kernel --kernel-flags /tmp/new_cmdline")
             except subprocess.CalledProcessError as e:
-                #                if e.returncode == 65:
-                print_error("System is pending reboot. Please reboot and try again.")
-                # Show error popup
-                error_popup = Popup(title="Error", title_align="center", title_size="20", auto_dismiss=False)
-                error_popup.size_hint = (0.5, 0.5)
-                error_popup.add_widget(BoxLayout(orientation="vertical", size_hint=(1, 1), spacing=100))
-                error_popup.children[0].add_widget(
-                    Label(text="System is pending reboot. Please reboot and try again.", valign="top"))
-                # add empty image to center text
-                error_popup.children[0].add_widget(Image(size_hint=(1, 1), source="assets/blank_icons/blank.png"))
-                error_popup.children[0].add_widget(Factory.RoundedButton(text="OK", on_press=error_popup.dismiss))
-                error_popup.open()
-                self.applying_cmdline = False
-                # else:
-                #     raise e
-
-            self.applying_cmdline = True  # stop spinning circle
+                if e.returncode == 65:
+                    print_error("System is pending reboot. Please reboot and try again.")
+                    # Show error popup
+                    error_popup = Popup(title="Error", title_align="center", title_size="20", auto_dismiss=False)
+                    error_popup.size_hint = (0.5, 0.5)
+                    error_popup.add_widget(BoxLayout(orientation="vertical", size_hint=(1, 1), spacing=100))
+                    error_popup.children[0].add_widget(
+                        Label(text="System is pending a reboot. Reboot and try again.", valign="top"))
+                    # add empty image to center text
+                    error_popup.children[0].add_widget(Image(size_hint=(1, 1), source="assets/blank_icons/blank.png"))
+                    error_popup.children[0].add_widget(Factory.RoundedButton(text="OK", on_press=__dismiss_popups))
+                    error_popup.open()
+                else:
+                    raise e
+            __dismiss_popups(None)
 
         print("Checking if cmdline changed")
         print(self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
@@ -294,8 +301,7 @@ class Screen4(SettingsScreen):  # kernel
             self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_loading_image.source = "assets/loading.png"
             # Clock passes an argument to the function, but we don't need it -> use lambda to ignore the argument
             print(self)
-            Clock.schedule_once(lambda dt: rotate_loading_image())
-            Clock.schedule_once(lambda dt: run_install_kernel())
+            Clock.schedule_once(lambda dt: __apply_cmdline())
 
 
 class Screen5(SettingsScreen):  # ZRAM
