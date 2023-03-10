@@ -36,11 +36,14 @@ def read_package_version(package_name: str) -> str:
             try:
                 raw_dpkg = bash(f"dpkg-query -s {package_name}")
                 if raw_dpkg.__contains__("Status: install ok installed"):
-                    return raw_dpkg.split("\n")[7][9:]
+                    return raw_dpkg.split("\n")[7][9:].strip()
             except subprocess.CalledProcessError:
                 return "Error"
         case "fedora":
-            pass
+            try:
+                raw_dnf = bash(f"dnf list -C {package_name}")
+            	if raw_dnf.__contains__("Installed Packages"):
+            	    return raw_dnf.split("                  ")[1].strip()    
         case "arch":
             pass
 
