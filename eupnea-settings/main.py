@@ -1,3 +1,4 @@
+import atexit
 import json
 
 from kivy.app import App
@@ -8,6 +9,8 @@ from kivy.factory import Factory
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
@@ -16,6 +19,11 @@ from functions import *
 
 global sidebar_buttons
 sidebar_buttons = ["Audio", "Keyboard", "Install location", "Kernel", "ZRAM", "About", "Help"]
+
+
+def exit_handler():
+    # show error popup somehow
+    pass
 
 
 def read_package_version(package_name: str) -> str:
@@ -237,8 +245,35 @@ class Screen4(SettingsScreen):  # kernel
     def apply_cmdline(self, instance):
         def rotate_loading_image():
             if self.applying_cmdline:
+                print(self.applying_cmdline)
                 self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_loading_image.angle -= 5
                 Clock.schedule_once(lambda dt: rotate_loading_image(), 0.025)
+
+        def run_install_kernel():
+            # Create new cmdline file
+            with open("/tmp/new_cmdline", "w") as f:
+                f.write(self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
+            # Start install-kernel script
+            try:
+                bash("/usr/lib/eupnea/install-kernel --kernel-flags /tmp/new_cmdline")
+            except subprocess.CalledProcessError as e:
+                #                if e.returncode == 65:
+                print_error("System is pending reboot. Please reboot and try again.")
+                # Show error popup
+                error_popup = Popup(title="Error", title_align="center", title_size="20", auto_dismiss=False)
+                error_popup.size_hint = (0.5, 0.5)
+                error_popup.add_widget(BoxLayout(orientation="vertical", size_hint=(1, 1), spacing=100))
+                error_popup.children[0].add_widget(
+                    Label(text="System is pending reboot. Please reboot and try again.", valign="top"))
+                # add empty image to center text
+                error_popup.children[0].add_widget(Image(size_hint=(1, 1), source="assets/blank_icons/blank.png"))
+                error_popup.children[0].add_widget(Factory.RoundedButton(text="OK", on_press=error_popup.dismiss))
+                error_popup.open()
+                self.applying_cmdline = False
+                # else:
+                #     raise e
+
+            self.applying_cmdline = True  # stop spinning circle
 
         print("Checking if cmdline changed")
         print(self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
@@ -249,13 +284,19 @@ class Screen4(SettingsScreen):  # kernel
             # grey out apply button
             self.manager.get_screen(self.name).ids.cmdline_popup.ids.apply_button.state = "down"
             self.manager.get_screen(self.name).ids.cmdline_popup.ids.apply_button.disabled = True
+            # Disable text input
+            self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.disabled = True
 
             # Set button text
             self.manager.get_screen(self.name).ids.cmdline_popup.ids.apply_button.text = "Applying cmdline..."
 
             # Start spinning circle
             self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_loading_image.source = "assets/loading.png"
-            Clock.schedule_once(lambda dt: rotate_loading_image())  # start spinning circle in separate thread
+            # Clock passes an argument to the function, but we don't need it -> use lambda to ignore the argument
+            print(self)
+            Clock.schedule_once(lambda dt: rotate_loading_image())
+            Clock.schedule_once(lambda dt: run_install_kernel())
+
 
 class Screen5(SettingsScreen):  # ZRAM
     pass
@@ -343,9 +384,10 @@ class MainApp(App):
         Window.clearcolor = (30 / 255, 32 / 255, 36 / 255, 1)  # color between transitions
         self.window_manager = WindowManager()
         self.window_manager.transition.duration = 0
-        self.window_manager.current = 'screen_1'
+        self.window_manager.current = 'screen_4'
         return self.window_manager
 
 
 if __name__ == '__main__':
+    atexit.register(exit_handler)
     MainApp().run()
