@@ -41,13 +41,17 @@ def read_package_version(package_name: str) -> str:
                 return "Error"
         case "fedora":
             try:
-                raw_dnf = bash(f"dnf list -C {package_name}")
+                raw_dnf = bash(f"dnf list -C {package_name}")  # -C prevents from updating repos -> faster operations
                 if raw_dnf.__contains__("Installed Packages"):
                     return raw_dnf.split("                  ")[1].strip()
             except subprocess.CalledProcessError:
                 return "Error"
         case "arch":
-            pass
+            try:
+                # pacman errors out if package is not installed -> no need to check output for install status
+                return bash(f"sudo pacman -Q {package_name}").split(" ")[1].strip()
+            except subprocess.CalledProcessError:
+                return "Error"
 
 
 class BlankScreen(Screen):
