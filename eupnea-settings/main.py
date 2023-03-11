@@ -42,8 +42,10 @@ def read_package_version(package_name: str) -> str:
         case "fedora":
             try:
                 raw_dnf = bash(f"dnf list -C {package_name}")
-            	if raw_dnf.__contains__("Installed Packages"):
-            	    return raw_dnf.split("                  ")[1].strip()    
+                if raw_dnf.__contains__("Installed Packages"):
+                    return raw_dnf.split("                  ")[1].strip()
+            except subprocess.CalledProcessError:
+                return "Error"
         case "arch":
             pass
 
