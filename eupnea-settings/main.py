@@ -254,7 +254,7 @@ class Screen4(SettingsScreen):  # kernel
     def apply_cmdline(self, instance):
         def rotate_loading_image():
             if self.applying_cmdline:
-                self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_loading_image.angle -= 5
+                self.manager.get_screen(self.name).ids.cmdline_loading_image.angle -= 5
                 Clock.schedule_once(lambda dt: rotate_loading_image(), 0.025)
 
         def __apply_cmdline():
@@ -271,8 +271,14 @@ class Screen4(SettingsScreen):  # kernel
             # Create new cmdline file
             with open("/tmp/new_cmdline", "w") as f:
                 f.write(self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
-            # Start install-kernel script
+            # read partitions
+            partitions = bash("mount | grep ' / ' | cut -d' ' -f 1")
+            partitions = partitions[:-1]  # get device name
+            # save current kernel to a file
+            print_status("Extracting current kernel")
+            bash(f"dd if={partitions}1 of=/tmp/current_kernel")
             try:
+                # Start install-kernel script
                 bash("/usr/lib/eupnea/install-kernel --kernel-flags /tmp/new_cmdline")
             except subprocess.CalledProcessError as e:
                 if e.returncode == 65:
@@ -297,20 +303,28 @@ class Screen4(SettingsScreen):  # kernel
             print("Changing cmdline")
             self.applying_cmdline = True
 
-            # grey out apply button
+            # grey out buttons
             self.manager.get_screen(self.name).ids.cmdline_popup.ids.apply_button.state = "down"
+            self.manager.get_screen(self.name).ids.cmdline_popup.ids.cancel_button.state = "down"
             self.manager.get_screen(self.name).ids.cmdline_popup.ids.apply_button.disabled = True
+            self.manager.get_screen(self.name).ids.cmdline_popup.ids.cancel_button.disabled = True
             # Disable text input
             self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.disabled = True
+
+            # Add loading image
+            temp_image = Factory.LoadingImage(source="assets/loading.png", size_hint=(1, 0.3))
+            self.ids['cmdline_loading_image'] = temp_image
+            self.manager.get_screen(self.name).ids.cmdline_popup.ids.popup_boxlayout.add_widget(temp_image)
 
             # Set button text
             self.manager.get_screen(self.name).ids.cmdline_popup.ids.apply_button.text = "Applying cmdline..."
 
             # Start spinning circle
-            self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_loading_image.source = "assets/loading.png"
             # Clock passes an argument to the function, but we don't need it -> use lambda to ignore the argument
             print(self)
             Clock.schedule_once(lambda dt: __apply_cmdline())
+        else:
+            self.manager.get_screen(self.name).ids.cmdline_popup.dismiss()
 
 
 class Screen5(SettingsScreen):  # ZRAM

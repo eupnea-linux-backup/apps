@@ -40,6 +40,7 @@
     size_hint: 0.7, 0.7
     BoxLayout:
         orientation: "vertical"
+        id: popup_boxlayout
         size_hint: 1, 1
         spacing: 10
         TextInput:
@@ -54,13 +55,13 @@
             orientation: "horizontal"
             size_hint: 1, 0.2
             RoundedButton:
+                id: cancel_button
+                text: "Cancel"
+                on_press: root.dismiss()
+            RoundedButton:
                 id: apply_button
                 text: "Apply changes"
                 on_press: root.screen.apply_cmdline(self)
-
-            LoadingImage:
-                source: "assets/blank_icons/blank.png"
-                id: cmdline_loading_image
 
 <MenuButton@Button>
     color: hex('#ffffff') if self.state == 'normal' else hex('#f7fcfa')
