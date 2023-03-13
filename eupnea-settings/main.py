@@ -276,10 +276,11 @@ class Screen4(SettingsScreen):  # kernel
             partitions = partitions[:-1]  # get device name
             # save current kernel to a file
             print_status("Extracting current kernel")
-            bash(f"dd if={partitions}1 of=/tmp/current_kernel")
+            # each time we want to do a root action we need to ask for password
+            # -> combine dd command and kernel flash command into one command to avoid asking for password twice
             try:
-                # Start install-kernel script
-                bash("pkexec /usr/lib/eupnea/install-kernel /tmp/current_kernel --kernel-flags /tmp/new_cmdline")
+                bash(f"pkexec sh -c 'dd if={partitions}1 of=/tmp/current_kernel /usr/lib/eupnea/install-kernel "
+                     f"/tmp/current_kernel --kernel-flags /tmp/new_cmdline'")
             except subprocess.CalledProcessError as e:
                 if e.returncode == 65:
                     print_error("System is pending reboot. Please reboot and try again.")
