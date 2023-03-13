@@ -279,7 +279,7 @@ class Screen4(SettingsScreen):  # kernel
             # each time we want to do a root action we need to ask for password
             # -> combine dd command and kernel flash command into one command to avoid asking for password twice
             try:
-                bash(f"pkexec sh -c 'dd if={partitions}1 of=/tmp/current_kernel /usr/lib/eupnea/install-kernel "
+                bash(f"pkexec sh -c 'dd if={partitions}1 of=/tmp/current_kernel && /usr/lib/eupnea/install-kernel "
                      f"/tmp/current_kernel --kernel-flags /tmp/new_cmdline'")
             except subprocess.CalledProcessError as e:
                 if e.returncode == 65:
