@@ -279,7 +279,7 @@ class Screen4(SettingsScreen):  # kernel
             bash(f"dd if={partitions}1 of=/tmp/current_kernel")
             try:
                 # Start install-kernel script
-                bash("/usr/lib/eupnea/install-kernel /tmp/current_kernel --kernel-flags /tmp/new_cmdline")
+                bash("pkexec /usr/lib/eupnea/install-kernel /tmp/current_kernel --kernel-flags /tmp/new_cmdline")
             except subprocess.CalledProcessError as e:
                 if e.returncode == 65:
                     print_error("System is pending reboot. Please reboot and try again.")
