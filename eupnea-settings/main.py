@@ -1,5 +1,9 @@
 import atexit
 import json
+import os
+
+# overwrite bad default kivy config location
+os.environ['KIVY_HOME'] = "~/.config/eupnea-settings"
 
 from kivy.app import App
 from kivy.clock import Clock
