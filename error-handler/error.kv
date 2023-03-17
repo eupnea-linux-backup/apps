@@ -1,23 +1,37 @@
 #:import hex kivy.utils.get_color_from_hex
 
+<RoundedButton@Button>
+    color: hex('#f7fcfa') if self.state == 'normal' else hex('#f7fcfa')
+    background_normal: ""
+    background_color: (0,0,0,0)
+    font_size: self.width / 12
+    canvas.before:
+        Color:
+            rgba: hex('#00bc7d') if self.state == 'normal' else hex('#2f312c')
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [self.width/25]
+
 <ErrorScreen>:
     BoxLayout:
         orientation: 'vertical'
         padding: 20
         spacing: 10
+        size_hint: 1, 1
         canvas.before:
             Color:
-                rgba: hex('#1E1E20')
+                rgba: hex('#1e2024')
             Rectangle:
                 pos: self.pos
                 size: self.size
 
         
         Label:
-            text: 'An unexpected error occurred'
+            text: 'Eupnea setting has crashed'
             size_hint_y: None
-            height: dp(30)
-            font_size: '20sp'
+            height: dp(40)
+            font_size: '30sp'
             color: hex('#DFDFD7')
             canvas.before:
                 Color:
@@ -38,9 +52,9 @@
 
             TextInput:
                 text: root.load_log_file()
-                foreground_color: hex('#C3E88D')
+                foreground_color: hex('#ffffff')
                 readonly: True
-                background_color: hex('#161618')
+                background_color: hex('#4f5055')
                 font_size: '15sp'
                 padding: 10
                 size_hint_y: None
@@ -48,24 +62,11 @@
                 on_text: scrollview.scroll_y = 0
 
 
-        Button:
-            text: 'Export Log'
-            on_release: root.show_export()
-            size_hint: None, 0.1
-            width: self.texture_size[0] + 50
+        RoundedButton:
+            text: "Export Log"
+            size_hint: 0.5, 0.2
             pos_hint: {'center_x': 0.5}
-            background_normal: ''
-            background_disabled_normal: ''
-            background_active_normal: ''
-            background_color: hex('#1E1E20')
-            border_color: hex('#525259')
-            color: hex('#C3E88D')
-            canvas.before:
-                Color:
-                    rgba: hex('#525259') if self.state == 'normal' else hex('#C3E88D')
-                Line:
-                    rectangle: self.x, self.y, self.width, self.height
-                    width: 1.1
+            on_press: root.show_export()
 
 
 <ExportDialog>:
