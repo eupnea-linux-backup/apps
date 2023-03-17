@@ -7,6 +7,7 @@ from kivy.uix.popup import Popup
 import os
 import subprocess
 
+LOGS_DIR = "~/.kivy/logs/"
 
 class ExportDialog(FloatLayout):
     export = ObjectProperty(None)
@@ -15,8 +16,7 @@ class ExportDialog(FloatLayout):
     
 
 class ErrorScreen(BoxLayout):
-    log_dir = "/root/.kivy/logs/"
-    error_log_file = log_dir + subprocess.check_output(f"ls {log_dir} -Art | tail -n 2 | head -n 1", shell=True).strip().decode()
+    error_log_file = subprocess.check_output(f"ls -Art -d -1 {LOGS_DIR}* | tail -n 2 | head -n 1", shell=True).strip().decode()
     
     def load_log_file(self):
         with open(self.error_log_file , 'r') as f:
