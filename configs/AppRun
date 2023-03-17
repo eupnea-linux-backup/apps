@@ -18,7 +18,7 @@ for opt in "$@"; do
   if [[ "${opt}" =~ "I" ]] || [[ "${opt}" =~ "E" ]]; then
     # Environment variables are disabled ($PYTHONHOME). Let's run in a safe
     # mode from the raw Python binary inside the AppImage
-    "$APPDIR/opt/python3.10/bin/python3.10 $APPDIR/opt/src/main.py || $APPDIR/opt/src/error-handler/error.py" "$@"
+    "$APPDIR/opt/python3.10/bin/python3.10 $APPDIR/opt/src/main.py" "$@"
     exit "$?"
   fi
 done
@@ -35,5 +35,6 @@ fi
 # Wrap the call to Python in order to mimic a call from the source
 # executable ($ARGV0), but potentially located outside of the Python
 # install ($PYTHONHOME)
-(PYTHONHOME="${APPDIR}/opt/python3.10" exec -a "${executable}" "$APPDIR/opt/python3.10/bin/python3.10" "$APPDIR/opt/src/main.py || $APPDIR/opt/src/error-handler/error.py" "$@")
+(PYTHONHOME="${APPDIR}/opt/python3.10" exec -a "${executable}" "$APPDIR/opt/python3.10/bin/python3.10" "$APPDIR/opt/src/main.py" "$@") || \
+    (PYTHONHOME="${APPDIR}/opt/python3.10" "${APPDIR}/opt/python3.10/bin/python3.10" "${APPDIR}/opt/src/error-handler/error.py")
 exit "$?"
