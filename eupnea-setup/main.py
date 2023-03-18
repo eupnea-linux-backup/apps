@@ -4,7 +4,7 @@ from kivy.core.window import Window
 from kivy.factory import Factory
 from kivy.uix.screenmanager import ScreenManager, Screen
 
-import system_functions
+import backend
 
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
 

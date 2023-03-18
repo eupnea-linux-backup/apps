@@ -1,3 +1,5 @@
+# This file contains all non-gui functions
+
 from typing import Tuple
 
 from functions import *
