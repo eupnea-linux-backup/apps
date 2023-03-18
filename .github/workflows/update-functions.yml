@@ -18,6 +18,7 @@ jobs:
         run: |
           cp ./python-os-functions/functions.py ./eupnea-setup/functions.py
           cp ./python-os-functions/functions.py ./eupnea-settings/functions.py
+          cp ./python-os-functions/functions.py ./error-handler/functions.py
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
