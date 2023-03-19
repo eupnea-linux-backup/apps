@@ -20,9 +20,7 @@ class CrashScreen(BoxLayout):
             "Eupnea Initial Setup": "~/.config/eupnea-setup/logs",
         }
 
-        export_dir = Path(os.path.expanduser(
-            "~/Downloads"
-        ))
+        export_dir = Path(os.path.expanduser("~/Downloads"))
         export_dir.mkdir(parents=True, exist_ok=True)
 
         log_files = []
