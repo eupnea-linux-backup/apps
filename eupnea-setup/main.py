@@ -1,10 +1,16 @@
+import os
+
+# overwrite default kivy home
+os.environ['KIVY_HOME'] = "~/.config/eupnea-setup"
+
 from kivy.app import App
 from kivy.config import Config
 from kivy.core.window import Window
 from kivy.factory import Factory
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import Screen, ScreenManager
 
 import backend
+
 
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
 

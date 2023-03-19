@@ -1,8 +1,7 @@
-import atexit
 import json
 import os
 
-# overwrite bad default kivy config location
+# overwrite default kivy home
 os.environ['KIVY_HOME'] = "~/.config/eupnea-settings"
 
 from kivy.app import App
@@ -15,19 +14,16 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import Screen, ScreenManager
 
-Config.set('input', 'mouse', 'mouse,disable_multitouch')
 
 from functions import *
 
+
+Config.set('input', 'mouse', 'mouse,disable_multitouch')
+
 global sidebar_buttons
 sidebar_buttons = ["Audio", "Keyboard", "Install location", "Kernel", "ZRAM", "About", "Help"]
-
-
-def exit_handler():
-    # show error popup somehow
-    pass
 
 
 def read_package_version(package_name: str) -> str:
@@ -423,5 +419,4 @@ class MainApp(App):
 
 
 if __name__ == '__main__':
-    atexit.register(exit_handler)
     MainApp().run()

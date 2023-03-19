@@ -1,10 +1,11 @@
 #:import hex kivy.utils.get_color_from_hex
 
+
 <RoundedButton@Button>
     color: hex('#f7fcfa') if self.state == 'normal' else hex('#f7fcfa')
     background_normal: ""
     background_color: (0,0,0,0)
-    font_size: self.width / 12
+    font_size: self.width / 15
     canvas.before:
         Color:
             rgba: hex('#00bc7d') if self.state == 'normal' else hex('#2f312c')
@@ -13,7 +14,8 @@
             size: self.size
             radius: [self.width/25]
 
-<ErrorScreen>:
+
+<CrashScreen>:
     BoxLayout:
         orientation: 'vertical'
         padding: 20
@@ -26,9 +28,8 @@
                 pos: self.pos
                 size: self.size
 
-        
         Label:
-            text: 'Eupnea setting has crashed'
+            text: root.crashed_app + " has crashed"
             size_hint_y: None
             height: dp(40)
             font_size: '30sp'
@@ -49,9 +50,8 @@
             bar_inactive_color: 0.7, 0.7, 0.7, 1
             on_size: scrollview.scroll_y = 0
 
-
             TextInput:
-                text: root.load_log_file()
+                text: root.load_log()
                 foreground_color: hex('#ffffff')
                 readonly: True
                 background_color: hex('#4f5055')
@@ -61,37 +61,28 @@
                 height: self.minimum_height + dp(30)
                 on_text: scrollview.scroll_y = 0
 
-
         RoundedButton:
-            text: "Export Log"
-            size_hint: 0.5, 0.2
+            text: "Export Log to ~/Downloads"
+            size_hint: 0.5, 0.15
             pos_hint: {'center_x': 0.5}
-            on_press: root.show_export()
+            on_press: root.export()
 
 
-<ExportDialog>:
-    text_input: text_input
+<SuccessfulExportPopup@Popup>:
+    title: "Export Success"
+    size_hint: 0.8, 0.4
+    separator_color: (0, 0, 0, 0)
+    background: ""
+    background_color: hex('#1e2024')
     BoxLayout:
-        size: root.size
-        pos: root.pos
         orientation: "vertical"
-        FileChooserListView:
-            id: filechooser
-            on_selection: text_input.text = self.selection and self.selection[0] or ''
-
-        TextInput:
-            id: text_input
+        Label:
+            text: "Crash log successfully exported as " + root.export_path
+        RoundedButton:
+            text: "Close and exit"
             size_hint_y: None
-            height: 30
-            multiline: False
-
-        BoxLayout:
-            size_hint_y: None
-            height: 30
-            Button:
-                text: "Cancel"
-                on_release: root.cancel()
-
-            Button:
-                text: "Export"
-                on_release: root.export(filechooser.path)
+            height: dp(40)
+            size_hint: 0.3, 0.25
+            pos_hint: {'center_x': 0.5}
+            font_size: self.width / 10
+            on_release: app.stop()
