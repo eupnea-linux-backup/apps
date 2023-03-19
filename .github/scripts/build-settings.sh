@@ -73,8 +73,8 @@ echo "Uninstalling unneeded python dependencies from appdir"
 echo "Copying eupnea-initial-setup code into appdir"
 mkdir /tmp/kivy_appdir/opt/src
 cp -r ./eupnea-settings/* /tmp/kivy_appdir/opt/src/
-# Copy error handler into appdir
-cp -r ./error-handler /tmp/kivy_appdir/opt/src/
+# Copy crash handler into appdir
+cp -r ./crash-handler /tmp/kivy_appdir/opt/src/
 
 # Add AppRun
 echo "Replaceing AppRun"
