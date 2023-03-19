@@ -11,7 +11,6 @@ from kivy.uix.screenmanager import Screen, ScreenManager
 
 import backend
 
-
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
 
 
@@ -30,7 +29,7 @@ class SetupScreen2(Screen):
 
 
 class SetupScreen3(Screen):
-    dictionaries = system_functions.parse_keyboard_layouts()
+    dictionaries = backend.parse_keyboard_layouts()
     prev_basic_label = None
     prev_advanced_label = None
 
@@ -114,7 +113,7 @@ class SetupScreen3(Screen):
 
     # next button clicked
     def button_clicked(self, instance) -> None:
-        system_functions.set_keyboard_layout(self.selected_layout)
+        backend.set_keyboard_layout(self.selected_layout)
 
 
 class SetupScreen4(Screen):
@@ -124,8 +123,8 @@ class SetupScreen4(Screen):
         self.manager.get_screen("setup_screen_4").ids.username_input.focus = True
 
         if self.manager.get_screen("setup_screen_4").ids.hostname_input.text == "":
-            self.manager.get_screen("setup_screen_4").ids.hostname_input.text = system_functions.get_hostname()
-            self.manager.get_screen("setup_screen_4").ids.hostname_input.hint_text = system_functions.get_hostname()
+            self.manager.get_screen("setup_screen_4").ids.hostname_input.text = backend.get_hostname()
+            self.manager.get_screen("setup_screen_4").ids.hostname_input.hint_text = backend.get_hostname()
 
     def clear_username_error(self):
         self.manager.get_screen("setup_screen_4").ids.username_error.text = ""
@@ -249,7 +248,7 @@ class SetupScreen5(Screen):
     # This function will be called every time the screen is displayed
     def on_enter(self):
         # Read Wi-Fi ssids
-        wifi_list = system_functions.get_wifi_list()
+        wifi_list = backend.get_wifi_list()
         if wifi_list[0] == "Already connected to the internet":
             print("Already connected to the internet")
             self.manager.current = "setup_screen_6"  # skip to next screen
