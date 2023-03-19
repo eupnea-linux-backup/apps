@@ -36,5 +36,5 @@ fi
 # executable ($ARGV0), but potentially located outside of the Python
 # install ($PYTHONHOME)
 (PYTHONHOME="${APPDIR}/opt/python3.10" exec -a "${executable}" "$APPDIR/opt/python3.10/bin/python3.10" "$APPDIR/opt/src/main.py" "$@") || \
-    (PYTHONHOME="${APPDIR}/opt/python3.10" "${APPDIR}/opt/python3.10/bin/python3.10" "${APPDIR}/opt/src/error-handler/error.py")
+    (PYTHONHOME="${APPDIR}/opt/python3.10" "${APPDIR}/opt/python3.10/bin/python3.10" "${APPDIR}/opt/src/crash-handler/handler.py")
 exit "$?"
