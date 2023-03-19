@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-os.environ["KIVY_HOME"] = "/tmp/crash-handler"
+os.environ["KIVY_HOME"] = "/tmp/eupnea-apps-crash-handler"
 
 from kivy.app import App
 from kivy.properties import ObjectProperty
