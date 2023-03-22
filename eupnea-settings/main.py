@@ -208,7 +208,7 @@ class Screen4(SettingsScreen):  # kernel
         self.ids['cmdline_popup'] = cmdline_popup
 
         exit_code, self.current_cmdline = backend.get_current_cmdline()
-        cmdline_popup.ids.cmdline_input.text = "Error reading cmdline" if exit_code else self.current_cmdline
+        cmdline_popup.ids.cmdline_input.text = self.current_cmdline
         cmdline_popup.open()
 
     # This function is called from kv only
@@ -231,7 +231,7 @@ class Screen4(SettingsScreen):  # kernel
 
             exit_code = backend.apply_kernel(
                 self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
-            if exit_code:
+            if exit_code == "PENDING_REBOOT":
                 # Show error popup
                 error_popup = Popup(title="Error", title_align="center", title_size="20", auto_dismiss=False)
                 error_popup.size_hint = (0.5, 0.5)
@@ -242,6 +242,9 @@ class Screen4(SettingsScreen):  # kernel
                 error_popup.children[0].add_widget(Image(size_hint=(1, 1), source="assets/blank_icons/blank.png"))
                 error_popup.children[0].add_widget(Factory.RoundedButton(text="OK", on_press=__dismiss_popups))
                 error_popup.open()
+            elif exit_code:
+                # TODO: Show generic error popup
+                pass
             __dismiss_popups(None)
 
         print("Checking if cmdline changed")

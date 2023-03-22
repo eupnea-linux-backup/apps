@@ -58,56 +58,46 @@ def reinstall_kernel() -> None:
     bash("/usr/lib/eupnea/modify-packages")
 
 
-def get_current_cmdline() -> Tuple[bool, str]:
+def get_current_cmdline() -> str:
     """
-    Returns the current kernel command line parameters
+    Returns the current kernel command line parameters or an error message if an error occurred
 
     Returns:
-        bool: flag indicating success or failure
-        str: contents of the file
+        str: contents of the file or an error message
+        str: contents of the file or an error message
     """
     try:
         with open("/proc/cmdline", "r") as f:
-            content = f.read()
+            content = f.read().strip()
         print(content)
-        return 0, content
+        return "Error reading cmdline" if content == "" else content
     except subprocess.CalledProcessError:
-        return 1, ""
+        return "Error reading cmdline"
 
 
-def apply_kernel(cmdline: str) -> bool:
+def apply_kernel(cmdline: str) -> str:
     """
     Apply a new kernel with the specified command line options
 
     Args:
         cmdline (str): The command line options
 
-    Raises:
-        e: If an error occurs while applying the new kernel
-
     Returns:
-        bool: 0 if the new kernel was applied successfully,
-              1 if the system is pending reboot
+        str: Empty string if the kernel was applied successfully
+             Error message if an error occurred
     """
-    # Create new cmdline file
-    with open("/tmp/new_cmdline", "w") as f:
+    # Create temp cmdline file
+    temp_file = bash("mktemp")
+    with open(temp_file, "w") as f:
         f.write(cmdline)
-    # read partitions
-    partitions = bash("mount | grep ' / ' | cut -d' ' -f 1")
-    partitions = partitions[:-1]  # get device name
-    # save current kernel to a file
-    print_status("Extracting current kernel")
-    # each time we want to do a root action we need to ask for password
-    # -> combine dd command and kernel flash command into one command to avoid asking for password twice
     try:
-        bash(f"pkexec sh -c 'dd if={partitions}1 of=/tmp/current_kernel && /usr/lib/eupnea/install-kernel "
-             f"/tmp/current_kernel --kernel-flags /tmp/new_cmdline'")
-        return 0
+        bash(f"pkexec /usr/lib/eupnea/install-kernel --kernel-flags {temp_file}")
+        return ""
     except subprocess.CalledProcessError as e:
-        if e.returncode != 65:
-            raise e
-        print_error("System is pending reboot. Please reboot and try again.")
-        return 1
+        if e.returncode == 65:
+            print_error("System is pending reboot. Please reboot and try again.")
+            return "PENDING_REBOOT"  # system is pending reboot
+        return e.output.decode("utf-8")  # return error message
 
 
 def read_eupnea_json() -> Union[Dict, List, str, int, float, bool, None]:
