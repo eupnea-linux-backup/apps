@@ -2,7 +2,7 @@ import contextlib
 import os
 
 # overwrite default kivy home
-os.environ['KIVY_HOME'] = "~/.config/eupnea-settings"
+os.environ["KIVY_HOME"] = "~/.config/eupnea-settings"
 
 from kivy.app import App
 from kivy.clock import Clock
@@ -18,7 +18,7 @@ from kivy.uix.screenmanager import Screen, ScreenManager
 
 import backend
 
-Config.set('input', 'mouse', 'mouse,disable_multitouch')
+Config.set("input", "mouse", "mouse,disable_multitouch")
 
 global sidebar_buttons
 sidebar_buttons = ["Audio", "Keyboard", "Install location", "Kernel", "ZRAM", "About", "Help"]
@@ -32,7 +32,8 @@ class SettingsScreen(Screen):
     # This function will be called every time the screen is displayed
     def on_enter(self):
         self.manager.get_screen(self.name).ids.side_bar.remove_widget(
-            self.manager.get_screen(self.name).ids.side_bar_fake_button)
+            self.manager.get_screen(self.name).ids.side_bar_fake_button
+        )
 
         for button in self.manager.get_screen(self.name).ids.side_bar.children:
             if button.text != sidebar_buttons[int(self.name[7:]) - 1]:
@@ -84,10 +85,18 @@ class Screen4(SettingsScreen):  # kernel
             # temp_grid.spacing = 10
             # temp_grid.padding = 50
             self.manager.get_screen(self.name).ids.screen_content_box.add_widget(temp_grid)
-            self.ids['about_screen_grid_layout'] = temp_grid
+            self.ids["about_screen_grid_layout"] = temp_grid
 
-            labels = ["Current kernel: ", "", "Kernel package version: ", "", "Modules package version: ", "",
-                      "Headers package version: ", ""]
+            labels = [
+                "Current kernel: ",
+                "",
+                "Kernel package version: ",
+                "",
+                "Modules package version: ",
+                "",
+                "Headers package version: ",
+                "",
+            ]
 
             for text in labels:
                 self.new_label = Factory.CustomLabel()
@@ -101,7 +110,7 @@ class Screen4(SettingsScreen):  # kernel
             cmdline_button.bind(on_release=self.show_cmdline_popup)
             cmdline_button.size_hint = (0.5, 0.5)
             cmdline_button.pos_hint = {"center_x": 0.5}
-            self.ids['cmdline_button'] = cmdline_button
+            self.ids["cmdline_button"] = cmdline_button
             self.manager.get_screen(self.name).ids.screen_content_box.add_widget(cmdline_button)
 
             # # Add empty image
@@ -114,13 +123,13 @@ class Screen4(SettingsScreen):  # kernel
             temp_box = BoxLayout()
             temp_box.size_hint = (1, 1)
             # temp_box.spacing = 10
-            self.ids['mainline_box'] = temp_box
+            self.ids["mainline_box"] = temp_box
             self.manager.get_screen(self.name).ids.screen_content_box.add_widget(temp_box)
 
             temp_box = BoxLayout()
             temp_box.size_hint = (1, 1)
             # temp_box.spacing = 10
-            self.ids['chromeos_box'] = temp_box
+            self.ids["chromeos_box"] = temp_box
             self.manager.get_screen(self.name).ids.screen_content_box.add_widget(temp_box)
 
             # Add mainline kernel button
@@ -129,14 +138,14 @@ class Screen4(SettingsScreen):  # kernel
             mainline_kernel_button.bind(on_release=self.kernel_button_clicked)
             mainline_kernel_button.size_hint = (0.5, 0.5)
             mainline_kernel_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
-            self.ids['mainline_kernel_button'] = mainline_kernel_button
+            self.ids["mainline_kernel_button"] = mainline_kernel_button
             self.manager.get_screen(self.name).ids.mainline_box.add_widget(mainline_kernel_button)
 
             # Add loading gif
             loading_image = Factory.LoadingImage(source="assets/blank_icons/blank.png")
             loading_image.size_hint = (0.5, 0.5)
             loading_image.pos_hint = {"center_x": 0.5, "center_y": 0.5}
-            self.ids['mainline_loading_image'] = loading_image
+            self.ids["mainline_loading_image"] = loading_image
             self.manager.get_screen(self.name).ids.mainline_box.add_widget(loading_image)
 
             # Add ChromeOS kernel button
@@ -145,14 +154,14 @@ class Screen4(SettingsScreen):  # kernel
             chromeos_kernel_button.bind(on_release=self.kernel_button_clicked)
             chromeos_kernel_button.size_hint = (0.5, 0.5)
             chromeos_kernel_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
-            self.ids['chromeos_kernel_button'] = chromeos_kernel_button
+            self.ids["chromeos_kernel_button"] = chromeos_kernel_button
             self.manager.get_screen(self.name).ids.chromeos_box.add_widget(chromeos_kernel_button)
 
             # Add loading gif
             loading_image = Factory.LoadingImage(source="assets/blank_icons/blank.png")
             loading_image.size_hint = (0.5, 0.5)
             loading_image.pos_hint = {"center_x": 1, "center_y": 0.5}
-            self.ids['chromeos_loading_image'] = loading_image
+            self.ids["chromeos_loading_image"] = loading_image
             self.manager.get_screen(self.name).ids.chromeos_box.add_widget(loading_image)
 
             self.first_enter = False
@@ -173,10 +182,12 @@ class Screen4(SettingsScreen):  # kernel
         self.manager.get_screen(self.name).ids.about_screen_grid_layout.children[0].text = headers_version
 
         # Set button text
-        self.manager.get_screen(
-            self.name).ids.chromeos_kernel_button.text = "Switch to ChromeOS kernel" if kernel_type == "mainline" else "Reinstall ChromeOS kernel"
-        self.manager.get_screen(
-            self.name).ids.mainline_kernel_button.text = "Switch to Mainline kernel" if kernel_type == "chromeos" else "Reinstall Mainline kernel"
+        self.manager.get_screen(self.name).ids.chromeos_kernel_button.text = (
+            "Switch to ChromeOS kernel" if kernel_type == "mainline" else "Reinstall ChromeOS kernel"
+        )
+        self.manager.get_screen(self.name).ids.mainline_kernel_button.text = (
+            "Switch to Mainline kernel" if kernel_type == "chromeos" else "Reinstall Mainline kernel"
+        )
 
     def kernel_button_clicked(self, instance):
         def rotate_loading_image():
@@ -205,10 +216,10 @@ class Screen4(SettingsScreen):  # kernel
     def show_cmdline_popup(self, instance):
         # Create cmdline popup
         cmdline_popup = Factory.CMDLinePopUp()
-        self.ids['cmdline_popup'] = cmdline_popup
+        self.ids["cmdline_popup"] = cmdline_popup
 
-        exit_code, self.current_cmdline = backend.get_current_cmdline()
-        cmdline_popup.ids.cmdline_input.text = self.current_cmdline
+        error, self.current_cmdline = backend.get_current_cmdline()
+        cmdline_popup.ids.cmdline_input.text = error or self.current_cmdline
         cmdline_popup.open()
 
     # This function is called from kv only
@@ -229,20 +240,18 @@ class Screen4(SettingsScreen):  # kernel
                     error_popup.dismiss()  # error popup doesnt exist if there was no error
                 self.manager.get_screen(self.name).ids.cmdline_popup.dismiss()
 
-            exit_code = backend.apply_kernel(
-                self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
-            if exit_code == "PENDING_REBOOT":
+            error = backend.apply_kernel(self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
+            if error == "PENDING_REBOOT":
                 # Show error popup
                 error_popup = Popup(title="Error", title_align="center", title_size="20", auto_dismiss=False)
                 error_popup.size_hint = (0.5, 0.5)
                 error_popup.add_widget(BoxLayout(orientation="vertical", size_hint=(1, 1), spacing=100))
-                error_popup.children[0].add_widget(
-                    Label(text="System is pending a reboot. Reboot and try again.", valign="top"))
+                error_popup.children[0].add_widget(Label(text=error, valign="top"))
                 # add empty image to center text
                 error_popup.children[0].add_widget(Image(size_hint=(1, 1), source="assets/blank_icons/blank.png"))
                 error_popup.children[0].add_widget(Factory.RoundedButton(text="OK", on_press=__dismiss_popups))
                 error_popup.open()
-            elif exit_code:
+            elif error:
                 # TODO: Show generic error popup
                 pass
             __dismiss_popups(None)
@@ -263,7 +272,7 @@ class Screen4(SettingsScreen):  # kernel
 
             # Add loading image
             temp_image = Factory.LoadingImage(source="assets/loading.png", size_hint=(1, 0.3))
-            self.ids['cmdline_loading_image'] = temp_image
+            self.ids["cmdline_loading_image"] = temp_image
             self.manager.get_screen(self.name).ids.cmdline_popup.ids.popup_boxlayout.add_widget(temp_image)
 
             # Set button text
@@ -305,13 +314,30 @@ class Screen6(SettingsScreen):  # about
             temp_grid.spacing = 10
             # temp_grid.padding = 50
             self.manager.get_screen(self.name).ids.screen_content_box.add_widget(temp_grid)
-            self.ids['help_screen_grid_layout'] = temp_grid
+            self.ids["help_screen_grid_layout"] = temp_grid
             # add labels to the screen
             # The empty strings are filled each time the screen is displayed
             # TODO: Differentiate between depthboot and eupneaOS
-            labels = ["Distribution: ", "", "Distribution version: ", "", "Desktop environment: ", "",
-                      "Depthboot version: ", "", "Eupnea utils version: ", "", "Eupnea updater version: ", "",
-                      "Install type: ", "", "Windowing system", "", "Firmware payload: ", ""]
+            labels = [
+                "Distribution: ",
+                "",
+                "Distribution version: ",
+                "",
+                "Desktop environment: ",
+                "",
+                "Depthboot version: ",
+                "",
+                "Eupnea utils version: ",
+                "",
+                "Eupnea updater version: ",
+                "",
+                "Install type: ",
+                "",
+                "Windowing system",
+                "",
+                "Firmware payload: ",
+                "",
+            ]
 
             for text in labels:
                 self.new_label = Factory.CustomLabel()
@@ -324,11 +350,25 @@ class Screen6(SettingsScreen):  # about
         data = backend.read_eupnea_json()  # Read eupnea configuration
         session_type = backend.get_session_type()  # Get session type
 
-        labels = [data["firmware_payload"].capitalize(), "", session_type.capitalize(), "", data["install_type"], "",
-                  backend.read_package_version("eupnea-system"), "", backend.read_package_version("eupnea-utils"), "",
-                  "v" + data["depthboot_version"], "",
-                  data["de_name"], "",
-                  data["distro_version"], "", data["distro_name"].capitalize()]
+        labels = [
+            data["firmware_payload"].capitalize(),
+            "",
+            session_type.capitalize(),
+            "",
+            data["install_type"],
+            "",
+            backend.read_package_version("eupnea-system"),
+            "",
+            backend.read_package_version("eupnea-utils"),
+            "",
+            "v" + data["depthboot_version"],
+            "",
+            data["de_name"],
+            "",
+            data["distro_version"],
+            "",
+            data["distro_name"].capitalize(),
+        ]
 
         for index, label in enumerate(self.manager.get_screen(self.name).ids.help_screen_grid_layout.children):
             if label.text == "":
@@ -353,13 +393,13 @@ class WindowManager(ScreenManager):
 
 class MainApp(App):
     def build(self):
-        self.title = 'Audio'
+        self.title = "Audio"
         Window.clearcolor = (30 / 255, 32 / 255, 36 / 255, 1)  # color between transitions
         self.window_manager = WindowManager()
         self.window_manager.transition.duration = 0
-        self.window_manager.current = 'screen_4'
+        self.window_manager.current = "screen_4"
         return self.window_manager
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     MainApp().run()

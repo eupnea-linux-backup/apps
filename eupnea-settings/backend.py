@@ -6,13 +6,16 @@ from functions import *
 
 def read_package_version(package_name: str) -> str:
     """
-    _summary_
+    Read specified package version in the current distribution
 
     Args:
-        package_name (str): _description_
+        package_name (str): Name of the package to read the version for
 
     Returns:
-        str: _description_
+        str: Version of the specified package if it is installed
+
+    Raises:
+        subprocess.CalledProcessError: If package information read fails
     """
     # Read eupnea.json to get distro info
     with open("/etc/eupnea.json", "r") as f:
@@ -58,21 +61,21 @@ def reinstall_kernel() -> None:
     bash("/usr/lib/eupnea/modify-packages")
 
 
-def get_current_cmdline() -> str:
+def get_current_cmdline() -> Tuple[str, str]:
     """
     Returns the current kernel command line parameters or an error message if an error occurred
 
     Returns:
-        str: contents of the file or an error message
-        str: contents of the file or an error message
+        str: error if file read fails
+        str: contents of the file
     """
     try:
         with open("/proc/cmdline", "r") as f:
             content = f.read().strip()
         print(content)
-        return "Error reading cmdline" if content == "" else content
+        return "", content
     except subprocess.CalledProcessError:
-        return "Error reading cmdline"
+        return "Error reading cmdline", ""
 
 
 def apply_kernel(cmdline: str) -> str:
