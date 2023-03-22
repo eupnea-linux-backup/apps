@@ -40,6 +40,7 @@ def read_package_version(package_name: str) -> str:
             except subprocess.CalledProcessError:
                 return "Error"
 
+
 def get_kernel_version() -> str:
     """
     Returns the version of the currently running kernel
@@ -49,11 +50,13 @@ def get_kernel_version() -> str:
     """
     return bash("uname -r")
 
+
 def reinstall_kernel() -> None:
     """
     Reinstalls the kernel packages using the "eupnea/modify-packages"
     """
     bash("/usr/lib/eupnea/modify-packages")
+
 
 def get_current_cmdline() -> Tuple[bool, str]:
     """
@@ -70,6 +73,7 @@ def get_current_cmdline() -> Tuple[bool, str]:
         return 0, content
     except subprocess.CalledProcessError:
         return 1, ""
+
 
 def apply_kernel(cmdline: str) -> bool:
     """
@@ -97,14 +101,14 @@ def apply_kernel(cmdline: str) -> bool:
     # -> combine dd command and kernel flash command into one command to avoid asking for password twice
     try:
         bash(f"pkexec sh -c 'dd if={partitions}1 of=/tmp/current_kernel && /usr/lib/eupnea/install-kernel "
-                f"/tmp/current_kernel --kernel-flags /tmp/new_cmdline'")
+             f"/tmp/current_kernel --kernel-flags /tmp/new_cmdline'")
         return 0
     except subprocess.CalledProcessError as e:
-        if e.returncode == 65:
-            print_error("System is pending reboot. Please reboot and try again.")
-            return 1
-        else:
+        if e.returncode != 65:
             raise e
+        print_error("System is pending reboot. Please reboot and try again.")
+        return 1
+
 
 def read_eupnea_json() -> Union[Dict, List, str, int, float, bool, None]:
     """
@@ -115,6 +119,7 @@ def read_eupnea_json() -> Union[Dict, List, str, int, float, bool, None]:
     """
     with open("/etc/eupnea.json") as f:
         return json.load(f)
+
 
 def get_session_type() -> str:
     try:

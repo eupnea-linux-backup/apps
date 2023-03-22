@@ -229,7 +229,8 @@ class Screen4(SettingsScreen):  # kernel
                     error_popup.dismiss()  # error popup doesnt exist if there was no error
                 self.manager.get_screen(self.name).ids.cmdline_popup.dismiss()
 
-            exit_code = backend.apply_kernel(self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
+            exit_code = backend.apply_kernel(
+                self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
             if exit_code:
                 # Show error popup
                 error_popup = Popup(title="Error", title_align="center", title_size="20", auto_dismiss=False)
@@ -317,8 +318,8 @@ class Screen6(SettingsScreen):  # about
 
             self.first_enter = False
 
-        data = backend.read_eupnea_json() # Read eupnea configuration
-        session_type = backend.get_session_type() # Get session type
+        data = backend.read_eupnea_json()  # Read eupnea configuration
+        session_type = backend.get_session_type()  # Get session type
 
         labels = [data["firmware_payload"].capitalize(), "", session_type.capitalize(), "", data["install_type"], "",
                   backend.read_package_version("eupnea-system"), "", backend.read_package_version("eupnea-utils"), "",
