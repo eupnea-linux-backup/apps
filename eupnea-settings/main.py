@@ -1,4 +1,4 @@
-import json
+import contextlib
 import os
 
 # overwrite default kivy home
@@ -16,42 +16,12 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager
 
-
-from functions import *
-
+import backend
 
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
 
 global sidebar_buttons
 sidebar_buttons = ["Audio", "Keyboard", "Install location", "Kernel", "ZRAM", "About", "Help"]
-
-
-def read_package_version(package_name: str) -> str:
-    # Read eupnea.json to get distro info
-    with open("/etc/eupnea.json", "r") as f:
-        distro_info = json.load(f)
-
-    match distro_info["distro_name"]:
-        case "ubuntu" | "popos":
-            try:
-                raw_dpkg = bash(f"dpkg-query -s {package_name}")
-                if raw_dpkg.__contains__("Status: install ok installed"):
-                    return raw_dpkg.split("\n")[7][9:].strip()
-            except subprocess.CalledProcessError:
-                return "Error"
-        case "fedora":
-            try:
-                raw_dnf = bash(f"dnf list -C {package_name}")  # -C prevents from updating repos -> faster operations
-                if raw_dnf.__contains__("Installed Packages"):
-                    return raw_dnf.split("                  ")[1].strip()
-            except subprocess.CalledProcessError:
-                return "Error"
-        case "arch":
-            try:
-                # pacman errors out if package is not installed -> no need to check output for install status
-                return bash(f"sudo pacman -Q {package_name}").split(" ")[1].strip()
-            except subprocess.CalledProcessError:
-                return "Error"
 
 
 class BlankScreen(Screen):
@@ -187,18 +157,14 @@ class Screen4(SettingsScreen):  # kernel
 
             self.first_enter = False
 
-        # Read eupnea.json to get distro info
-        with open("/etc/eupnea.json", "r") as f:
-            distro_info = json.load(f)
-
         # read kernel version
-        kernel_version = bash("uname -r")
+        kernel_version = backend.get_kernel_version()
 
         kernel_type = "chromeos" if kernel_version.startswith("5.") else "mainline"
 
-        image_version = read_package_version(f"eupnea-{kernel_type}-kernel")
-        modules_version = read_package_version(f"eupnea-{kernel_type}-kernel-modules")
-        headers_version = read_package_version(f"eupnea-{kernel_type}-kernel-headers")
+        image_version = backend.read_package_version(f"eupnea-{kernel_type}-kernel")
+        modules_version = backend.read_package_version(f"eupnea-{kernel_type}-kernel-modules")
+        headers_version = backend.read_package_version(f"eupnea-{kernel_type}-kernel-headers")
 
         # Set kernel version labels
         self.manager.get_screen(self.name).ids.about_screen_grid_layout.children[6].text = kernel_version
@@ -230,7 +196,7 @@ class Screen4(SettingsScreen):  # kernel
             self.manager.get_screen(self.name).ids.mainline_kernel_button.state = "down"
 
             # Start re/installing kernel
-            bash("/usr/lib/eupnea/modify-packages")
+            backend.reinstall_kernel()
 
             # start spinning gif
             self.manager.get_screen(self.name).ids.loading_image.source = "assets/loading.png"
@@ -241,17 +207,12 @@ class Screen4(SettingsScreen):  # kernel
         cmdline_popup = Factory.CMDLinePopUp()
         self.ids['cmdline_popup'] = cmdline_popup
 
-        try:
-            with open("/proc/cmdline", "r") as f:
-                self.current_cmdline = f.read()
-            print(self.current_cmdline)
-            cmdline_popup.ids.cmdline_input.text = self.current_cmdline
-        except subprocess.CalledProcessError:
-            cmdline_popup.ids.cmdline_input.text = "Error reading cmdline"
+        exit_code, self.current_cmdline = backend.get_current_cmdline()
+        cmdline_popup.ids.cmdline_input.text = "Error reading cmdline" if exit_code else self.current_cmdline
         cmdline_popup.open()
 
     # This function is called from kv only
-    def apply_cmdline(self, instance):
+    def apply_cmdline(self, _):
         def rotate_loading_image():
             if self.applying_cmdline:
                 self.manager.get_screen(self.name).ids.cmdline_loading_image.angle -= 5
@@ -268,34 +229,18 @@ class Screen4(SettingsScreen):  # kernel
                     error_popup.dismiss()  # error popup doesnt exist if there was no error
                 self.manager.get_screen(self.name).ids.cmdline_popup.dismiss()
 
-            # Create new cmdline file
-            with open("/tmp/new_cmdline", "w") as f:
-                f.write(self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
-            # read partitions
-            partitions = bash("mount | grep ' / ' | cut -d' ' -f 1")
-            partitions = partitions[:-1]  # get device name
-            # save current kernel to a file
-            print_status("Extracting current kernel")
-            # each time we want to do a root action we need to ask for password
-            # -> combine dd command and kernel flash command into one command to avoid asking for password twice
-            try:
-                bash(f"pkexec sh -c 'dd if={partitions}1 of=/tmp/current_kernel && /usr/lib/eupnea/install-kernel "
-                     f"/tmp/current_kernel --kernel-flags /tmp/new_cmdline'")
-            except subprocess.CalledProcessError as e:
-                if e.returncode == 65:
-                    print_error("System is pending reboot. Please reboot and try again.")
-                    # Show error popup
-                    error_popup = Popup(title="Error", title_align="center", title_size="20", auto_dismiss=False)
-                    error_popup.size_hint = (0.5, 0.5)
-                    error_popup.add_widget(BoxLayout(orientation="vertical", size_hint=(1, 1), spacing=100))
-                    error_popup.children[0].add_widget(
-                        Label(text="System is pending a reboot. Reboot and try again.", valign="top"))
-                    # add empty image to center text
-                    error_popup.children[0].add_widget(Image(size_hint=(1, 1), source="assets/blank_icons/blank.png"))
-                    error_popup.children[0].add_widget(Factory.RoundedButton(text="OK", on_press=__dismiss_popups))
-                    error_popup.open()
-                else:
-                    raise e
+            exit_code = backend.apply_kernel(self.manager.get_screen(self.name).ids.cmdline_popup.ids.cmdline_input.text)
+            if exit_code:
+                # Show error popup
+                error_popup = Popup(title="Error", title_align="center", title_size="20", auto_dismiss=False)
+                error_popup.size_hint = (0.5, 0.5)
+                error_popup.add_widget(BoxLayout(orientation="vertical", size_hint=(1, 1), spacing=100))
+                error_popup.children[0].add_widget(
+                    Label(text="System is pending a reboot. Reboot and try again.", valign="top"))
+                # add empty image to center text
+                error_popup.children[0].add_widget(Image(size_hint=(1, 1), source="assets/blank_icons/blank.png"))
+                error_popup.children[0].add_widget(Factory.RoundedButton(text="OK", on_press=__dismiss_popups))
+                error_popup.open()
             __dismiss_popups(None)
 
         print("Checking if cmdline changed")
@@ -372,17 +317,11 @@ class Screen6(SettingsScreen):  # about
 
             self.first_enter = False
 
-        # Read /etc/eupnea.json
-        with open("/etc/eupnea.json") as f:
-            data = json.load(f)
-
-        try:
-            session_type = bash("echo $XDG_SESSION_TYPE")
-        except subprocess.CalledProcessError:
-            session_type = "Unknown"
+        data = backend.read_eupnea_json() # Read eupnea configuration
+        session_type = backend.get_session_type() # Get session type
 
         labels = [data["firmware_payload"].capitalize(), "", session_type.capitalize(), "", data["install_type"], "",
-                  read_package_version("eupnea-system"), "", read_package_version("eupnea-utils"), "",
+                  backend.read_package_version("eupnea-system"), "", backend.read_package_version("eupnea-utils"), "",
                   "v" + data["depthboot_version"], "",
                   data["de_name"], "",
                   data["distro_version"], "", data["distro_name"].capitalize()]
