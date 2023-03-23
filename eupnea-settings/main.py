@@ -32,8 +32,7 @@ class SettingsScreen(Screen):
     # This function will be called every time the screen is displayed
     def on_enter(self):
         self.manager.get_screen(self.name).ids.side_bar.remove_widget(
-            self.manager.get_screen(self.name).ids.side_bar_fake_button
-        )
+            self.manager.get_screen(self.name).ids.side_bar_fake_button)
 
         for button in self.manager.get_screen(self.name).ids.side_bar.children:
             if button.text != sidebar_buttons[int(self.name[7:]) - 1]:
@@ -183,11 +182,9 @@ class Screen4(SettingsScreen):  # kernel
 
         # Set button text
         self.manager.get_screen(self.name).ids.chromeos_kernel_button.text = (
-            "Switch to ChromeOS kernel" if kernel_type == "mainline" else "Reinstall ChromeOS kernel"
-        )
+            "Switch to ChromeOS kernel" if kernel_type == "mainline" else "Reinstall ChromeOS kernel")
         self.manager.get_screen(self.name).ids.mainline_kernel_button.text = (
-            "Switch to Mainline kernel" if kernel_type == "chromeos" else "Reinstall Mainline kernel"
-        )
+            "Switch to Mainline kernel" if kernel_type == "chromeos" else "Reinstall Mainline kernel")
 
     def kernel_button_clicked(self, instance):
         def rotate_loading_image():
