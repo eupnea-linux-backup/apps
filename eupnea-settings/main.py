@@ -112,6 +112,18 @@ class Screen4(SettingsScreen):  # kernel
             self.ids["cmdline_button"] = cmdline_button
             self.manager.get_screen(self.name).ids.screen_content_box.add_widget(cmdline_button)
 
+            # Add sleep fix button
+            sleep_fix_button = Factory.RoundedButton()
+            if backend.deep_sleep_enabled():
+                sleep_fix_button.text = "Re-enable deep sleep"
+            else:
+                sleep_fix_button.text = "Disable deep sleep"
+            sleep_fix_button.bind(on_release=lambda dt: backend.toggle_deep_sleep())
+            sleep_fix_button.size_hint = (0.5, 0.5)
+            sleep_fix_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
+            self.ids["sleep_fix_button"] = sleep_fix_button
+            self.manager.get_screen(self.name).ids.screen_content_box.add_widget(sleep_fix_button)
+
             # # Add empty image
             # empty_image = Factory.LoadingImage(source="assets/blank_icons/blank_green.png")
             # empty_image.size_hint = (0.05, 0.05)

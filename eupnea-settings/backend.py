@@ -4,6 +4,30 @@ from typing import Dict, List, Tuple, Union
 from functions import *
 
 
+def deep_sleep_enabled() -> bool:
+    """
+    Checks if deep sleep is enabled
+
+    Returns:
+        bool: True if deep sleep is enabled
+              False if deep sleep is disabled
+    """
+    return path_exists("/etc/systemd/sleep.conf.d/deep_sleep_block.conf")
+
+
+def toggle_deep_sleep() -> None:
+    """
+    Disables/enables deep sleep via a systemd config, depending on the current state
+    """
+    # TODO: Somehow temporarily request admin perms, without resorting to bash
+    if not deep_sleep_enabled():
+        mkdir("/etc/systemd/sleep.conf.d")
+        with open("/etc/systemd/sleep.conf.d/deep_sleep_block.conf", "w") as f:
+            f.write("SuspendState=freeze\nHibernateState=freeze\n")
+    else:
+        rmfile("/etc/systemd/sleep.conf.d/deep_sleep_block.conf")
+
+
 def read_package_version(package_name: str) -> str:
     """
     Read specified package version in the current distribution
