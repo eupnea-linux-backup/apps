@@ -21,7 +21,7 @@ import backend
 Config.set("input", "mouse", "mouse,disable_multitouch")
 
 global sidebar_buttons
-sidebar_buttons = ["Audio", "Keyboard", "Install location", "Kernel", "ZRAM", "About", "Help"]
+sidebar_buttons = ["Audio", "Keyboard", "Install to disk", "Kernel", "ZRAM", "About", "Help"]
 
 
 class BlankScreen(Screen):
