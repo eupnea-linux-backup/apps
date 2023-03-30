@@ -19,11 +19,11 @@ def toggle_deep_sleep() -> None:
     """
     Disables/enables deep sleep via a systemd config, depending on the current state
     """
-    # TODO: Somehow temporarily request admin perms, without resorting to bash
     if not deep_sleep_enabled():
-        mkdir("/etc/systemd/sleep.conf.d")
-        with open("/etc/systemd/sleep.conf.d/deep_sleep_block.conf", "w") as f:
-            f.write("SuspendState=freeze\nHibernateState=freeze\n")
+        # TODO: Implement a python version of this
+        with contextlib.suppress(subprocess.CalledProcessError):
+            bash('pkexec bash -c "mkdir -p /etc/systemd/sleep.conf.d && echo -e '
+                 '\"SuspendState=freeze\\nHibernateState=freeze\" > /etc/systemd/sleep.conf.d/deep_sleep_block.conf"')
     else:
         rmfile("/etc/systemd/sleep.conf.d/deep_sleep_block.conf")
 
