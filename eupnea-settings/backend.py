@@ -25,7 +25,7 @@ def toggle_deep_sleep() -> None:
             bash('pkexec bash -c "mkdir -p /etc/systemd/sleep.conf.d && echo -e '
                  '\"SuspendState=freeze\\nHibernateState=freeze\" > /etc/systemd/sleep.conf.d/deep_sleep_block.conf"')
     else:
-        rmfile("/etc/systemd/sleep.conf.d/deep_sleep_block.conf")
+        bash("pkexec rm -f /etc/systemd/sleep.conf.d/deep_sleep_block.conf")
 
 
 def read_package_version(package_name: str) -> str:
