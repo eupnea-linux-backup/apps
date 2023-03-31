@@ -328,23 +328,23 @@ class Screen6(SettingsScreen):  # about
             # The empty strings are filled each time the screen is displayed
             # TODO: Differentiate between depthboot and eupneaOS
             labels = [
-                "Distribution: ",
+                "Distribution:",
                 "",
-                "Distribution version: ",
+                "Distribution version:",
                 "",
-                "Desktop environment: ",
+                "Desktop environment:",
                 "",
-                "Depthboot version: ",
+                "Depthboot version:",
                 "",
-                "Eupnea utils version: ",
+                "Eupnea utils version:",
                 "",
-                "Eupnea updater version: ",
+                "Eupnea updater version:",
                 "",
-                "Install type: ",
+                "Install type:",
                 "",
-                "Windowing system",
+                "Windowing system:",
                 "",
-                "Firmware payload: ",
+                "Firmware payload:",
                 "",
             ]
 
