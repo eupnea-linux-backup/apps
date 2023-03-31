@@ -58,6 +58,8 @@ def read_package_version(package_name: str) -> str:
                 raw_dnf = bash(f"dnf list -yC {package_name}")  # -C prevents from updating repos -> faster operations
                 if raw_dnf.__contains__("Installed Packages"):
                     return raw_dnf.split("                  ")[1].strip()
+                else:
+                    return "Error"
             except subprocess.CalledProcessError:
                 return "Error"
         case "arch":
