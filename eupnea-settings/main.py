@@ -1,5 +1,6 @@
 import contextlib
 import os
+import threading
 
 # overwrite default kivy home
 os.environ["KIVY_HOME"] = "~/.config/eupnea-settings"
@@ -31,6 +32,11 @@ class BlankScreen(Screen):
 class SettingsScreen(Screen):
     # This function will be called every time the screen is displayed
     def on_enter(self):
+        # kill all running processes
+        # print(multiprocessing.active_children())
+        # for process in multiprocessing.active_children():
+        #     process.kill()
+
         self.manager.get_screen(self.name).ids.side_bar.remove_widget(
             self.manager.get_screen(self.name).ids.side_bar_fake_button)
 
@@ -177,26 +183,39 @@ class Screen4(SettingsScreen):  # kernel
 
             self.first_enter = False
 
-        # read kernel version
-        kernel_version = backend.get_kernel_version()
+        # disable kernel buttons while async task is running
+        self.manager.get_screen(self.name).ids.mainline_kernel_button.disabled = True
+        self.manager.get_screen(self.name).ids.chromeos_kernel_button.disabled = True
 
-        kernel_type = "chromeos" if kernel_version.startswith("5.") else "mainline"
+        def _background_load(self):
+            # read kernel version
+            kernel_version = backend.get_kernel_version()
 
-        image_version = backend.read_package_version(f"eupnea-{kernel_type}-kernel")
-        modules_version = backend.read_package_version(f"eupnea-{kernel_type}-kernel-modules")
-        headers_version = backend.read_package_version(f"eupnea-{kernel_type}-kernel-headers")
+            kernel_type = "chromeos" if kernel_version.startswith("5.") else "mainline"
 
-        # Set kernel version labels
-        self.manager.get_screen(self.name).ids.about_screen_grid_layout.children[6].text = kernel_version
-        self.manager.get_screen(self.name).ids.about_screen_grid_layout.children[4].text = image_version
-        self.manager.get_screen(self.name).ids.about_screen_grid_layout.children[2].text = modules_version
-        self.manager.get_screen(self.name).ids.about_screen_grid_layout.children[0].text = headers_version
+            # Set kernel version labels
+            self.manager.get_screen(self.name).ids.about_screen_grid_layout.children[6].text = kernel_version
+            image_version = backend.read_package_version(f"eupnea-{kernel_type}-kernel")
+            self.manager.get_screen(self.name).ids.about_screen_grid_layout.children[4].text = image_version
+            modules_version = backend.read_package_version(f"eupnea-{kernel_type}-kernel-modules")
+            self.manager.get_screen(self.name).ids.about_screen_grid_layout.children[2].text = modules_version
+            headers_version = backend.read_package_version(f"eupnea-{kernel_type}-kernel-headers")
+            self.manager.get_screen(self.name).ids.about_screen_grid_layout.children[0].text = headers_version
 
-        # Set button text
-        self.manager.get_screen(self.name).ids.chromeos_kernel_button.text = (
-            "Switch to ChromeOS kernel" if kernel_type == "mainline" else "Reinstall ChromeOS kernel")
-        self.manager.get_screen(self.name).ids.mainline_kernel_button.text = (
-            "Switch to Mainline kernel" if kernel_type == "chromeos" else "Reinstall Mainline kernel")
+            # Set button text
+            self.manager.get_screen(self.name).ids.chromeos_kernel_button.text = (
+                "Switch to ChromeOS kernel" if kernel_type == "mainline" else "Reinstall ChromeOS kernel")
+            self.manager.get_screen(self.name).ids.mainline_kernel_button.text = (
+                "Switch to Mainline kernel" if kernel_type == "chromeos" else "Reinstall Mainline kernel")
+
+            # Re-enable kernel buttons
+            print(self.manager.get_screen(self.name).ids.mainline_kernel_button.disabled)
+            self.manager.get_screen(self.name).ids.mainline_kernel_button.disabled = False
+            print(self.manager.get_screen(self.name).ids.mainline_kernel_button.disabled)
+            self.manager.get_screen(self.name).ids.chromeos_kernel_button.disabled = False
+
+        # start _background_load in a thread
+        threading.Thread(target=_background_load, args=(self,)).start()
 
     def kernel_button_clicked(self, instance):
         def rotate_loading_image():
@@ -356,32 +375,40 @@ class Screen6(SettingsScreen):  # about
 
             self.first_enter = False
 
-        data = backend.read_eupnea_json()  # Read eupnea configuration
-        session_type = backend.get_session_type()  # Get session type
+        def _background_load(self):
+            print(self)
+            # threaded function to fill fields to prevent freezing of the ui
 
-        labels = [
-            data["firmware_payload"].capitalize(),
-            "",
-            session_type.capitalize(),
-            "",
-            data["install_type"],
-            "",
-            backend.read_package_version("eupnea-system"),
-            "",
-            backend.read_package_version("eupnea-utils"),
-            "",
-            "v" + data["depthboot_version"],
-            "",
-            data["de_name"],
-            "",
-            data["distro_version"],
-            "",
-            data["distro_name"].capitalize(),
-        ]
+            data = backend.read_eupnea_json()  # Read eupnea configuration
+            session_type = backend.get_session_type()  # Get session type
 
-        for index, label in enumerate(self.manager.get_screen(self.name).ids.help_screen_grid_layout.children):
-            if label.text == "":
-                label.text = labels[index]
+            labels = [
+                data["firmware_payload"].capitalize(),
+                "",
+                session_type.capitalize(),
+                "",
+                data["install_type"],
+                "",
+                backend.read_package_version("eupnea-system"),
+                "",
+                backend.read_package_version("eupnea-utils"),
+                "",
+                "v" + data["depthboot_version"],
+                "",
+                data["de_name"],
+                "",
+                data["distro_version"],
+                "",
+                data["distro_name"].capitalize(),
+            ]
+
+            for index, label in enumerate(self.manager.get_screen(self.name).ids.help_screen_grid_layout.children):
+                if label.text == "":
+                    label.text = labels[index]
+
+        # start _background_load in a thread
+        print(self)
+        threading.Thread(target=_background_load, args=(self,)).start()
 
 
 class Screen7(SettingsScreen):  # help
