@@ -156,14 +156,20 @@
                         height: side_bar_fake_button.height / 2
                         on_press: root.side_bar_button_clicked(self)
                     MenuButton:
-                        text: "About"
+                        text: "Fedora extras"
                         id: side_bar_button_6
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
                         on_press: root.side_bar_button_clicked(self)
                     MenuButton:
-                        text: "Help"
+                        text: "About"
                         id: side_bar_button_7
+                        size_hint_y: None
+                        height: side_bar_fake_button.height / 2
+                        on_press: root.side_bar_button_clicked(self)
+                    MenuButton:
+                        text: "Help"
+                        id: side_bar_button_8
                         size_hint_y: None
                         height: side_bar_fake_button.height / 2
                         on_press: root.side_bar_button_clicked(self)
@@ -193,6 +199,7 @@
     Screen5:
     Screen6:
     Screen7:
+    Screen8:
 
 <BlankScreen>:
     name: "blank"
@@ -218,3 +225,5 @@
     name: "screen_6"
 <Screen7@SettingsScreen>:
     name: "screen_7"
+<Screen8@SettingsScreen>:
+    name: "screen_8"

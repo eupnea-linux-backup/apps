@@ -21,9 +21,6 @@ import backend
 
 Config.set("input", "mouse", "mouse,disable_multitouch")
 
-global sidebar_buttons
-sidebar_buttons = ["Audio", "Keyboard", "Install to disk", "Kernel", "ZRAM", "About", "Help"]
-
 
 class BlankScreen(Screen):
     pass
@@ -32,13 +29,21 @@ class BlankScreen(Screen):
 class SettingsScreen(Screen):
     # This function will be called every time the screen is displayed
     def on_enter(self):
-        # kill all running processes
+        # TODO: kill all running threads
         # print(multiprocessing.active_children())
         # for process in multiprocessing.active_children():
         #     process.kill()
 
         self.manager.get_screen(self.name).ids.side_bar.remove_widget(
             self.manager.get_screen(self.name).ids.side_bar_fake_button)
+
+        # remove extra buttons from sidebar if they should not be there
+        if "Install to disk" not in sidebar_buttons:
+            self.manager.get_screen(self.name).ids.side_bar.remove_widget(
+                self.manager.get_screen(self.name).ids.side_bar_button_3)
+        if "Fedora extras" not in sidebar_buttons:
+            self.manager.get_screen(self.name).ids.side_bar.remove_widget(
+                self.manager.get_screen(self.name).ids.side_bar_button_6)
 
         for button in self.manager.get_screen(self.name).ids.side_bar.children:
             if button.text != sidebar_buttons[int(self.name[7:]) - 1]:
@@ -318,7 +323,11 @@ class Screen5(SettingsScreen):  # ZRAM
     pass
 
 
-class Screen6(SettingsScreen):  # about
+class Screen6(SettingsScreen):  # Fedora extras
+    pass
+
+
+class Screen7(SettingsScreen):  # about
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.first_enter = True
@@ -411,7 +420,7 @@ class Screen6(SettingsScreen):  # about
         threading.Thread(target=_background_load, args=(self,)).start()
 
 
-class Screen7(SettingsScreen):  # help
+class Screen8(SettingsScreen):  # help
     pass
 
 
@@ -438,4 +447,12 @@ class MainApp(App):
 
 
 if __name__ == "__main__":
+    # determine which screens should be shown
+    sidebar_buttons = ["Audio", "Keyboard", "Install to disk", "Kernel", "ZRAM", "Fedora extras", "About", "Help"]
+    eupnea_json = backend.read_eupnea_json()
+    if eupnea_json["install_type"] in ["internal", "expanded-internal"]:
+        sidebar_buttons.remove("Install to disk")
+    if eupnea_json["distro_name"] != "fedora":
+        sidebar_buttons.remove("Fedora extras")
+
     MainApp().run()
