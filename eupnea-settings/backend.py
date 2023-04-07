@@ -22,8 +22,11 @@ def toggle_deep_sleep() -> None:
     if not deep_sleep_enabled():
         # TODO: Implement a python version of this
         with contextlib.suppress(subprocess.CalledProcessError):
-            bash('pkexec bash -c "mkdir -p /etc/systemd/sleep.conf.d && echo -e '
-                 '\\"SuspendState=freeze\nHibernateState=freeze\\" > /etc/systemd/sleep.conf.d/deep_sleep_block.conf"')
+            # the sleep.conf.d directory may not exist -> create it
+            # copy the deep_sleep_block.conf file to the sleep.conf.d directory
+            # reload systemd for the changes to take effect
+            bash('pkexec bash -c "mkdir -p /etc/systemd/sleep.conf.d && cp /usr/share/eupnea/deep_sleep_block.conf '
+                 '/etc/systemd/sleep.conf.d/deep_sleep_block.conf && systemctl daemon-reload"')
     else:
         bash("pkexec rm -f /etc/systemd/sleep.conf.d/deep_sleep_block.conf")
 
