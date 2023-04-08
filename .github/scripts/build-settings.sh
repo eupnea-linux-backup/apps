@@ -39,11 +39,11 @@ echo "Installing dependencies into appdir"
 # Unpack non python deps into appdir
 echo "Installing non python dependencies"
 # make dirs
-mkdir /tmp/{xclip,libsdl2,libsdl2-image,libdecor,libjpeg-turbo8,libtiff5,libjbig0,libdeflate0}
+mkdir /tmp/{xclip,libsdl2,libsdl2-image,libdecor,libjpeg-turbo8,libtiff5,libjbig0,libdeflate0,libxss1}
 # xclip is needed for Kivy on X11 systems
 # libsdl2 dependencies are needed on some systems
 # libjpeg-turbo8 is needed on Fedora
-apt-get download xclip libsdl2-2.0-0 libsdl2-image-2.0-0 libjpeg-turbo8 libdecor-0-0 libtiff5 libjbig0 libdeflate0
+apt-get download xclip libsdl2-2.0-0 libsdl2-image-2.0-0 libjpeg-turbo8 libdecor-0-0 libtiff5 libjbig0 libdeflate0 libxss1
 # extract debs
 dpkg-deb -R ./xclip*.deb /tmp/xclip
 dpkg-deb -R ./libsdl2-2.0-0*.deb /tmp/libsdl2
@@ -53,6 +53,7 @@ dpkg-deb -R ./libjpeg-turbo8*.deb /tmp/libjpeg-turbo8
 dpkg-deb -R ./libtiff5*.deb /tmp/libtiff5
 dpkg-deb -R ./libjbig0*.deb /tmp/libjbig0
 dpkg-deb -R ./libdeflate0*.deb /tmp/libdeflate0
+dpkg-deb -R ./libxss1*.deb /tmp/libxss1
 rm *.deb # remove debs
 # copy binaries into appdir
 cp -r /tmp/xclip/usr/bin /tmp/kivy_appdir/usr
@@ -63,6 +64,7 @@ cp -r /tmp/libjpeg-turbo8/usr/lib/* /tmp/kivy_appdir/usr/lib
 cp -r /tmp/libtiff5/usr/lib/* /tmp/kivy_appdir/usr/lib
 cp -r /tmp/libjbig0/usr/lib/* /tmp/kivy_appdir/usr/lib
 cp -r /tmp/libdeflate0/usr/lib/* /tmp/kivy_appdir/usr/lib
+cp -r /tmp/libxss1/usr/lib/* /tmp/kivy_appdir/usr/lib
 
 # Clean appdir
 echo "Uninstalling unneeded python dependencies from appdir"
