@@ -229,22 +229,31 @@ class Screen4(SettingsScreen):  # kernel
                     self.manager.get_screen(self.name).ids.loading_image.angle -= 5
                 Clock.schedule_once(lambda dt: rotate_loading_image(), 0.025)
 
-        if not self.kernel_install_in_process:
-            print(f"{instance.text} pressed")
-            self.kernel_install_in_process = True
+        def __process_kernel(instance_text):
+            backend.install_kernel(instance_text.startswith("Reinstall"))  # Pass True if reinstalling
 
-            # Disable both kernel buttons
-            self.manager.get_screen(self.name).ids.chromeos_kernel_button.disabled = True
+            # re-enable kernel buttons when done
+            self.manager.get_screen(self.name).ids.chromeos_kernel_button.disabled = False
             self.manager.get_screen(self.name).ids.chromeos_kernel_button.state = "down"
-            self.manager.get_screen(self.name).ids.mainline_kernel_button.disabled = True
+            self.manager.get_screen(self.name).ids.mainline_kernel_button.disabled = False
             self.manager.get_screen(self.name).ids.mainline_kernel_button.state = "down"
+            self.kernel_install_in_process = False
 
-            # Start re/installing kernel
-            backend.reinstall_kernel()
+        print(f"{instance.text} pressed")
+        self.kernel_install_in_process = True
 
-            # start spinning gif
-            self.manager.get_screen(self.name).ids.loading_image.source = "assets/loading.png"
-            Clock.schedule_once(lambda dt: rotate_loading_image())  # start spinning circle in separate thread
+        # Disable both kernel buttons
+        self.manager.get_screen(self.name).ids.chromeos_kernel_button.disabled = True
+        self.manager.get_screen(self.name).ids.chromeos_kernel_button.state = "down"
+        self.manager.get_screen(self.name).ids.mainline_kernel_button.disabled = True
+        self.manager.get_screen(self.name).ids.mainline_kernel_button.state = "down"
+
+        # start spinning gif
+        self.manager.get_screen(self.name).ids.loading_image.source = "assets/loading.png"
+        Clock.schedule_once(lambda dt: rotate_loading_image())  # start spinning circle in separate thread
+
+        # start kernel install in a thread
+        Clock.schedule_once(lambda dt: threading.Thread(target=__process_kernel, args=(instance.text,)).start())
 
     def show_cmdline_popup(self, instance):
         # Create cmdline popup

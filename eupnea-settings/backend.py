@@ -83,11 +83,18 @@ def get_kernel_version() -> str:
     return bash("uname -r")
 
 
-def reinstall_kernel() -> None:
+def install_kernel(reinstall: bool = False) -> None:
     """
-    Reinstalls the kernel packages using the "eupnea/modify-packages"
+    Reinstalls the kernel packages using the "eupnea modify-packages script"
     """
-    bash("/usr/lib/eupnea/modify-packages")
+    temp_file = bash("mktemp")
+    if get_kernel_version().startswith("5."):
+        with open(temp_file, "w") as f:
+            f.write("!eupnea-chromeos-kernel" if reinstall else "eupnea-chromeos-kernel")
+    else:
+        with open(temp_file, "w") as f:
+            f.write("!eupnea-mainline-kernel" if reinstall else "eupnea-mainline-kernel")
+    bash(f"/usr/lib/eupnea/modify-packages --file {temp_file}")
 
 
 def get_current_cmdline() -> Tuple[str, str]:
