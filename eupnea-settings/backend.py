@@ -4,6 +4,19 @@ from typing import Dict, List, Tuple, Union
 from functions import *
 
 
+def bash_with_perms(command: str) -> str:
+    """
+    Runs a bash command with root permissions obtained through pkexec
+
+    Args:
+        command (str): Bash command to run
+
+    Returns:
+        str: Output of the command
+    """
+    return bash(f"pkexec bash -c '{command}'")
+
+
 def deep_sleep_enabled() -> bool:
     """
     Checks if deep sleep is enabled
@@ -25,10 +38,10 @@ def toggle_deep_sleep() -> None:
             # the sleep.conf.d directory may not exist -> create it
             # copy the deep_sleep_block.conf file to the sleep.conf.d directory
             # reload systemd for the changes to take effect
-            bash('pkexec bash -c "mkdir -p /etc/systemd/sleep.conf.d && cp /usr/share/eupnea/deep_sleep_block.conf '
-                 '/etc/systemd/sleep.conf.d/deep_sleep_block.conf && systemctl daemon-reload"')
+            bash_with_perms("mkdir -p /etc/systemd/sleep.conf.d && cp /usr/share/eupnea/deep_sleep_block.conf "
+                            "/etc/systemd/sleep.conf.d/deep_sleep_block.conf && systemctl daemon-reload")
     else:
-        bash("pkexec rm -f /etc/systemd/sleep.conf.d/deep_sleep_block.conf")
+        bash_with_perms("rm -f /etc/systemd/sleep.conf.d/deep_sleep_block.conf")
 
 
 def read_package_version(package_name: str) -> str:
@@ -94,7 +107,7 @@ def install_kernel(reinstall: bool = False) -> None:
     else:
         with open(temp_file, "w") as f:
             f.write("!eupnea-mainline-kernel" if reinstall else "eupnea-mainline-kernel")
-    bash(f"/usr/lib/eupnea/modify-packages --file {temp_file}")
+    bash_with_perms(f"/usr/lib/eupnea/modify-packages --file {temp_file}")
 
 
 def get_current_cmdline() -> Tuple[str, str]:
@@ -130,7 +143,7 @@ def apply_kernel(cmdline: str) -> str:
     with open(temp_file, "w") as f:
         f.write(cmdline)
     try:
-        bash(f"pkexec /usr/lib/eupnea/install-kernel --kernel-flags {temp_file}")
+        bash_with_perms(f"/usr/lib/eupnea/install-kernel --kernel-flags {temp_file}")
         return ""
     except subprocess.CalledProcessError as e:
         if e.returncode == 65:
