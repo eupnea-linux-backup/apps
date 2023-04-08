@@ -2,6 +2,8 @@
 
 Distro + toolkit independent Apps GUI for EupneaOS and Depthboot.  
 Written with the [kivy](https://kivy.org/) python gui framework.
+The appimage build scripts is based
+on [cross-platform-python-gui](https://github.com/maltfield/cross-platform-python-gui).
 
 ## Eupnea setup:
 
