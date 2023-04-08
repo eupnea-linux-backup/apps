@@ -223,11 +223,14 @@ class Screen4(SettingsScreen):  # kernel
         threading.Thread(target=_background_load, args=(self,)).start()
 
     def kernel_button_clicked(self, instance):
-        def rotate_loading_image():
+        def rotate_loading_image(kernel_type):
             if self.kernel_install_in_process:
                 if self.manager.current == self.name:  # only spin if current screen is visible
-                    self.manager.get_screen(self.name).ids.loading_image.angle -= 5
-                Clock.schedule_once(lambda dt: rotate_loading_image(), 0.025)
+                    if kernel_type == "mainline":
+                        self.manager.get_screen(self.name).ids.mainline_loading_image.angle -= 5
+                    else:
+                        self.manager.get_screen(self.name).ids.chromeos_loading_image.angle -= 5
+                Clock.schedule_once(lambda dt: rotate_loading_image(kernel_type), 0.025)
 
         def __process_kernel(instance_text):
             backend.install_kernel(instance_text.startswith("Reinstall"))  # Pass True if reinstalling
@@ -249,11 +252,17 @@ class Screen4(SettingsScreen):  # kernel
         self.manager.get_screen(self.name).ids.mainline_kernel_button.state = "down"
 
         # start spinning gif
-        self.manager.get_screen(self.name).ids.loading_image.source = "assets/loading.png"
-        Clock.schedule_once(lambda dt: rotate_loading_image())  # start spinning circle in separate thread
+        if instance.text.__contains__("Mainline"):
+            self.manager.get_screen(self.name).ids.mainline_loading_image.source = "assets/loading.png"
+            # start rotating loading image
+            Clock.schedule_once(lambda dt: rotate_loading_image("mainline"))
+        else:
+            self.manager.get_screen(self.name).ids.chromeos_loading_image.source = "assets/loading.png"
+            # start rotating loading image
+            Clock.schedule_once(lambda dt: rotate_loading_image("chromeos"))
 
         # start kernel install in a thread
-        Clock.schedule_once(lambda dt: threading.Thread(target=__process_kernel, args=(instance.text,)).start())
+        Clock.schedule_once(lambda dt: __process_kernel(instance.text))
 
     def show_cmdline_popup(self, instance):
         # Create cmdline popup
