@@ -1,4 +1,5 @@
 import os
+from kivy import Config
 from pathlib import Path
 
 os.environ["KIVY_HOME"] = "/tmp/eupnea-apps-crash-handler"
@@ -7,6 +8,8 @@ from kivy.app import App
 from kivy.properties import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
+
+Config.set("input", "mouse", "mouse,disable_multitouch")
 
 
 class SuccessfulExportPopup(Popup):
