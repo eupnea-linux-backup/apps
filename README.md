@@ -1,4 +1,4 @@
-# apps
+# Apps
 
 Distro + toolkit independent GUI apps for EupneaOS and Depthboot.  
 Written with the [kivy](https://kivy.org/) python gui framework.
