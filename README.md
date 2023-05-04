@@ -1,24 +1,24 @@
-# eupnea-apps
+# apps
 
-Distro + toolkit independent Apps GUI for EupneaOS and Depthboot.  
+Distro + toolkit independent GUI apps for EupneaOS and Depthboot.  
 Written with the [kivy](https://kivy.org/) python gui framework.
 The appimage build scripts is based
 on [cross-platform-python-gui](https://github.com/maltfield/cross-platform-python-gui).
 
-## Eupnea setup:
+## Eupnea-setup
 
 Initial setup app, similar to gnome-initial-setup, but distro-agnostic.
 
-## Eupnea settings
+## Eupnea-settings
 
 Settings app for Eupnea specific options. Not intended to replace the system settings app.
 
-## Disclaimer:
+## Disclaimer
 
 These apps are not designed/intended to be run on non depthboot systems. **DO NOT** just run it on
 your system as it might override some settings and/or damage your OS!!! Run it in a virtual machine.
 
-## How to run the apps for debugging/developing:
+## How to run the apps for debugging/developing
 
 1. Install pip.
 2. Install kivy with pip: `pip install kivy`
